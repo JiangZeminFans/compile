@@ -13,3 +13,7 @@ void LowAST::setExpr(LowAST *low, LOW_OP op, HighAST *high) {
     this->op=op;
     this->high=unique_ptr<HighAST>(high);
 }
+
+void LowAST::setHighExp(HighAST* high) {
+    this->high=unique_ptr<HighAST>(high);
+}

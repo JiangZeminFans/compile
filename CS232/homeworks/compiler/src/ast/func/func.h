@@ -11,4 +11,5 @@
 #include "SentenceAST.h"
 #include "Sentences.h"
 #include "stmt/stmt.h"
+#include "FuncRParamList.h"
 #endif //COMPILER_FUNC_H

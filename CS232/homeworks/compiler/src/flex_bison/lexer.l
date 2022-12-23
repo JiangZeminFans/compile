@@ -13,15 +13,15 @@ EXP ([Ee][-+]?[0-9]+)
 %%
 
 /*整数*/
-0[0-7]*     {yylval.int_t=strtol(yytext);return NUM}
-[1-9][0-9]* {yylval.int_t=strtol(yytext);return NUM}
-0[Xx][0-9a-fA-F]+   {yylval.int_t=strtol(yytext);return NUM}
+0[0-7]*     {yylval.int_t=strtol(yytext,nullptr,0);return NUM;}
+[1-9][0-9]* {yylval.int_t=strtol(yytext,nullptr,0);return NUM;}
+0[Xx][0-9a-fA-F]+   {yylval.int_t=strtol(yytext,nullptr,0);return NUM;}
 
 /*十进制小数*/
-([0-9]*\.[0-9]+|[0-9]+\.){EXP}? {yylval.float_t=strtof(yytext);return REAL}
-[0-9]+{EXP} {yylval.float_t=strtof(yytext);return REAL}
+([0-9]*\.[0-9]+|[0-9]+\.){EXP}? {yylval.float_t=strtof(yytext,nullptr);return REAL;}
+[0-9]+{EXP} {yylval.float_t=strtof(yytext,nullptr);return REAL;}
 /*十六进制小数*/
-0[Xx]([0-9a-fA-F]*\.[0-9a-fA-F]+)|[0-9a-fA-F]+|([0-9a-fA-F]+\.?)[Pp][-+]?[0-9]+ {yylval.float_t=atof(yytext);return REAL}
+0[Xx]([0-9a-fA-F]*\.[0-9a-fA-F]+)|[0-9a-fA-F]+|([0-9a-fA-F]+\.?)[Pp][-+]?[0-9]+ {yylval.float_t=strtof(yytext,nullptr);return REAL;}
 
 /*注释*/
 "/*"    {BEGIN(COMMENT);}
@@ -30,7 +30,7 @@ EXP ([Ee][-+]?[0-9]+)
 <COMMENT><<EOF>>    {printf("%d:unterminated comment",yylineno);return 0;}
 
 /*单行注释*/
-”//“.*\n    {lineno++;}
+”//“.*\n    {yylineno++;}
 
 /*关键字*/
 "int"  {  return INT;  }
@@ -41,7 +41,7 @@ EXP ([Ee][-+]?[0-9]+)
 
 "void" { return VOID; }
 
-"return"  {  return RETURN;  }
+"return"  {  return RET;  }
 
 "continue"  {  return CONTINUE; }
 
@@ -102,10 +102,10 @@ EXP ([Ee][-+]?[0-9]+)
 
 
 /*标识符*/
-([_a-zA-Z]|{UCN})([_a-zA-Z0-9]|{UCN})*  {yylval.token = new string(yytext);return ID;}
+([_a-zA-Z]|{UCN})([_a-zA-Z0-9]|{UCN})*  {yylval.id = new string(yytext);return ID;}
 
 /*换行*/
-[\n] {lineno++;}
+[\n] {yylineno++;}
 
 /*空白字符*/
 [ \t]+

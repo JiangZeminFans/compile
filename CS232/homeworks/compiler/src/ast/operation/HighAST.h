@@ -16,8 +16,8 @@ public:
     unique_ptr<HighAST> high;
 
     void setOp(HIGH_OP op);
-    void setModAST(HighAST* factor);
-    void setMulAST(HighAST* factor);
+    void setModExp(HighAST* factor);
+    void setMulExp(HighAST* factor);
     void setDivExp(HighAST* factor);
     void setUnaryExp(UnaryAST* unary);
 

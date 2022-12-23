@@ -42,7 +42,6 @@
 #endif
 #if YYDEBUG
 extern int yydebug;
-
 #endif
 
 /* Token type.  */
@@ -92,12 +91,13 @@ extern int yydebug;
   };
 #endif
 
-/* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 #include "../base.h"
 #include "../ast/all_ast.h"
 #include <memory>
 #include<stdarg.h>
+
+/* Value type.  */
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
 #line 17 "parser.y"
@@ -123,7 +123,7 @@ union YYSTYPE
     FuncParamAST* funcP;
     BlockAST* block;
     Sentences* sentences;
-    Sentence* sentence;
+    SentenceAST* sentence;
     StmtAST* stmt;
     ReturnStmtAST* returnStmt;
     IterationStmtAST* iteration;
@@ -131,15 +131,15 @@ union YYSTYPE
     LeftValAST* lVal;
     PrimaryExpAST* primary;
     NumberAST* number;
-    UnaryExpAST* unary;
+    UnaryAST* unary;
     CallAST* call;
     FuncRParamList* funcR;
     HighAST* mul;
     LowAST* add;
     RelExpAST* rel;
-    EqAST* eq;
-    AndAST* and;
-    OrAST* or;
+    EqExpAST* eq;
+    AndAST* andExp;
+    OrAST* orExp;
 
 #line 140 "parser.hpp"
 

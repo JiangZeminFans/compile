@@ -5,7 +5,7 @@
 #ifndef COMPILER_DECL_H
 #define COMPILER_DECL_H
 #include "DecAST.h"
-#include "DefList.h"
+#include "IdDefList.h"
 #include "DimensionAST.h"
 #include "IdDefAST.h"
 #include "InitValAST.h"

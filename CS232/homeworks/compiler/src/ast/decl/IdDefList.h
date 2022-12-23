@@ -2,8 +2,8 @@
 // Created by 86180 on 2022/12/22.
 //
 
-#ifndef COMPILER_DEFLIST_H
-#define COMPILER_DEFLIST_H
+#ifndef COMPILER_IDDEFLIST_H
+#define COMPILER_IDDEFLIST_H
 #include "../AST.h"
 #include "IdDefAST.h"
 
@@ -15,4 +15,4 @@ public:
 };
 
 
-#endif //COMPILER_DEFLIST_H
+#endif //COMPILER_IDDEFLIST_H

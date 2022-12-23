@@ -50,7 +50,7 @@
     HighAST* mul;
     LowAST* add;
     RelExpAST* rel;
-    EqAST* eq;
+    EqExpAST* eq;
     AndAST* andExp;
     OrAST* orExp;
 };
@@ -84,8 +84,8 @@
 %type <add> Expression AddExp
 %type <rel> RelExp
 %type <eq> EqExp
-%type <and> AndExp
-%type <or> Cond OrExp
+%type <andExp> AndExp
+%type <orExp> Cond OrExp
 %type <op> UnaryOp
 
 //终结符
@@ -225,7 +225,7 @@ InitVal: Expression{
             ;
 //1,2,345,64
 InitValList:InitVal{
-                $$=new InitValListAST();
+                $$=new InitValList();
                 $$->add($1)
             }|InitValList COMMA InitVal{
                 $$=$1;
@@ -357,7 +357,7 @@ ReturnStmt: RET Expression SEMI{
 SelectStmt: IF LS Cond RS Stmt %prec LOWER_THAN_ELSE{
                 $$=new SelectStmtAST();
                 $$->setCondition($3);
-                $$->setStmt($5);
+                $$->setIf($5);
             }|IF LS Cond RS Stmt ELSE Stmt{
                 $$=new SelectStmtAST();
                 $$->setCondition($3);
@@ -493,7 +493,7 @@ AddExp: MulExp{
         ;
 RelExp: AddExp{
             $$ = new RelExpAST();
-            $$->high=unique<LowAST>($1);
+            $$->high=unique_ptr<LowAST>($1);
         }|RelExp GE AddExp{
  			$$ = new RelExpAST();
  			$$->setExp($1,GE_REL,$3)

@@ -94,7 +94,7 @@ typedef unsigned int flex_uint32_t;
 
 /* begin standard C++ headers. */
 
-/* TOD: this is always defined, so inline it */
+/* TODO: this is always defined, so inline it */
 #define yyconst const
 
 #if defined(__GNUC__) && __GNUC__ >= 3
@@ -615,15 +615,11 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "lexer.l"
 #line 4 "lexer.l"
-    #include <string>
+    #include "string.h"
     #include "parser.hpp"
-    int yycolumn=1;
-#define YY_USER_ACTION    	yylloc.first_line=yylloc.last_line=yylineno; \
-	yylloc.first_column=yycolumn;	yylloc.last_column=yycolumn+yyleng-1; yycolumn+=yyleng;
+#line 621 "lexer.cpp"
 
-#line 625 "lexer.cpp"
-
-#line 627 "lexer.cpp"
+#line 623 "lexer.cpp"
 
 #define INITIAL 0
 #define COMMENT 1
@@ -841,11 +837,11 @@ YY_DECL
 		}
 
 	{
-#line 19 "lexer.l"
+#line 13 "lexer.l"
 
 
 
-#line 849 "lexer.cpp"
+#line 845 "lexer.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -914,252 +910,252 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 22 "lexer.l"
+#line 16 "lexer.l"
 {yylval.int_t=strtol(yytext,nullptr,0);return NUM;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 23 "lexer.l"
+#line 17 "lexer.l"
 {yylval.int_t=strtol(yytext,nullptr,0);return NUM;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 24 "lexer.l"
+#line 18 "lexer.l"
 {yylval.int_t=strtol(yytext,nullptr,0);return NUM;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 27 "lexer.l"
+#line 21 "lexer.l"
 {yylval.float_t=strtof(yytext,nullptr);return REAL;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 28 "lexer.l"
+#line 22 "lexer.l"
 {yylval.float_t=strtof(yytext,nullptr);return REAL;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 31 "lexer.l"
+#line 24 "lexer.l"
 {yylval.float_t=strtof(yytext,nullptr);return REAL;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 34 "lexer.l"
+#line 27 "lexer.l"
 {BEGIN(COMMENT);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 35 "lexer.l"
+#line 28 "lexer.l"
 {BEGIN(INITIAL);}
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 36 "lexer.l"
+#line 29 "lexer.l"
 
 	YY_BREAK
 case YY_STATE_EOF(COMMENT):
-#line 37 "lexer.l"
+#line 30 "lexer.l"
 {printf("%d:unterminated comment",yylineno);return 0;}
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 40 "lexer.l"
+#line 33 "lexer.l"
 {yylineno++;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 43 "lexer.l"
+#line 36 "lexer.l"
 {  return INT;  }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 45 "lexer.l"
+#line 38 "lexer.l"
 { return FLOAT; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 47 "lexer.l"
+#line 40 "lexer.l"
 { return CONST; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 49 "lexer.l"
+#line 42 "lexer.l"
 { return VOID; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 51 "lexer.l"
+#line 44 "lexer.l"
 {  return RET;  }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 53 "lexer.l"
+#line 46 "lexer.l"
 {  return CONTINUE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 55 "lexer.l"
+#line 48 "lexer.l"
 { return BREAK; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 57 "lexer.l"
+#line 50 "lexer.l"
 {  return IF;  }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 59 "lexer.l"
+#line 52 "lexer.l"
 {  return ELSE;  }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 61 "lexer.l"
+#line 54 "lexer.l"
 {  return WHILE;  }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 64 "lexer.l"
+#line 57 "lexer.l"
 {  return AND;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 66 "lexer.l"
+#line 59 "lexer.l"
 { return OR;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 68 "lexer.l"
+#line 61 "lexer.l"
 { return NOT;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 70 "lexer.l"
+#line 63 "lexer.l"
 {  return EQ;  }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 72 "lexer.l"
+#line 65 "lexer.l"
 {  return NE;  }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 74 "lexer.l"
+#line 67 "lexer.l"
 {  return LE;  }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 76 "lexer.l"
+#line 69 "lexer.l"
 {  return LT;  }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 78 "lexer.l"
+#line 71 "lexer.l"
 {  return GE;  }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 80 "lexer.l"
+#line 73 "lexer.l"
 {  return GT;  }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 82 "lexer.l"
+#line 75 "lexer.l"
 {  return ADD; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 84 "lexer.l"
+#line 77 "lexer.l"
 {  return MINUS; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 86 "lexer.l"
+#line 79 "lexer.l"
 {  return MUL; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 88 "lexer.l"
+#line 81 "lexer.l"
 {  return DIV; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 90 "lexer.l"
+#line 83 "lexer.l"
 {  return SEMI; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 92 "lexer.l"
+#line 85 "lexer.l"
 {  return MOD; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 94 "lexer.l"
+#line 87 "lexer.l"
 {  return ASSIGN; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 96 "lexer.l"
+#line 89 "lexer.l"
 {  return COMMA; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 98 "lexer.l"
+#line 91 "lexer.l"
 {  return LS; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 100 "lexer.l"
+#line 93 "lexer.l"
 {  return RS; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 102 "lexer.l"
+#line 95 "lexer.l"
 {  return LM; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 104 "lexer.l"
+#line 97 "lexer.l"
 {  return RM; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 106 "lexer.l"
+#line 99 "lexer.l"
 {  return LB; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 108 "lexer.l"
+#line 101 "lexer.l"
 {  return RB; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 112 "lexer.l"
-{yylval.id = new std::string(yytext);return ID;}
+#line 105 "lexer.l"
+{yylval.id = new string(yytext);return ID;}
 	YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 115 "lexer.l"
+#line 108 "lexer.l"
 {yylineno++;}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 118 "lexer.l"
+#line 111 "lexer.l"
 
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 121 "lexer.l"
+#line 114 "lexer.l"
 {printf("行%d:非法输入：%s",yylineno,yytext);exit(0);}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 123 "lexer.l"
+#line 116 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 1163 "lexer.cpp"
+#line 1159 "lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1642,7 +1638,7 @@ static int yy_get_next_buffer (void)
     void yy_switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
 {
     
-	/*  We should be able to replace this entire function body
+	/* TODO. We should be able to replace this entire function body
 	 * with
 	 *		yypop_buffer_state();
 	 *		yypush_buffer_state(new_buffer);
@@ -2176,6 +2172,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 123 "lexer.l"
+#line 116 "lexer.l"
 
 

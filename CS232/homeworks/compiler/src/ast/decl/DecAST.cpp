@@ -8,6 +8,6 @@ void DecAST::accept(Visitor &visitor) {
 
 }
 
-void DecAST::setIdDefList(vector<unique_ptr<IdDefAST>> defList) {
-    this->defList.swap(defList);
+void DecAST::setIdDefList(IdDefList* defList) {
+    this->defList.swap(defList->defList);
 }

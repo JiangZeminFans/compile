@@ -9,6 +9,7 @@
 #include "../AST.h"
 #include "../func/FuncDefAST.h"
 #include "IdDefAST.h"
+#include "IdDefList.h"
 
 class DecAST : public AST{
 public:
@@ -16,7 +17,7 @@ public:
     bool isConst;
     vector<unique_ptr<IdDefAST>> defList;//声明表
     void accept(Visitor &visitor) override;
-    void setIdDefList(vector<unique_ptr<IdDefAST>> defList);
+    void setIdDefList(IdDefList* defList);
 };
 
 

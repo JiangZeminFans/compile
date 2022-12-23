@@ -68,10 +68,7 @@
 /* First part of user prologue.  */
 #line 4 "parser.y"
 
-    #include "../base.h"
-    #include "../ast/all_ast.h"
-    #include <memory>
-    #include<stdarg.h>
+    #include "parser.hpp"
 
     extern int yylineno;
     extern int yylex();
@@ -211,8 +208,8 @@ union YYSTYPE
     LowAST* add;
     RelExpAST* rel;
     EqExpAST* eq;
-    AndAST* and;
-    OrAST* or;
+    AndAST* andExp;
+    OrAST* orExp;
 
 #line 218 "parser.cpp"
 
@@ -1654,7 +1651,7 @@ yyreduce:
 #line 136 "parser.y"
            {
             (yyval.decDef)=new DecDefAST();
-            (yyval.decDef)->setDecl((yyvsp[0].decl));
+            (yyval.decDef)->setDec((yyvsp[0].decl));
         }
 #line 1660 "parser.cpp"
     break;
@@ -1717,7 +1714,7 @@ yyreduce:
   case 12:
 #line 178 "parser.y"
                {
-        (yyval.idDefList)=new IdDefList();
+        (yyval.idDefList)=new DefListAST();
         (yyval.idDefList)->add((yyvsp[0].idDefAST));
     }
 #line 1724 "parser.cpp"
@@ -1819,7 +1816,7 @@ yyreduce:
   case 23:
 #line 227 "parser.y"
                    {
-                (yyval.initValList)=new InitValListAST();
+                (yyval.initValList)=new InitValList();
                 (yyval.initValList)->add((yyvsp[0].initVal))
             }
 #line 1826 "parser.cpp"
@@ -2088,8 +2085,8 @@ yyreduce:
 #line 357 "parser.y"
                                                     {
                 (yyval.select)=new SelectStmtAST();
-                (yyval.select)->setCondition((yyvsp[-2].or));
-                (yyval.select)->setStmt((yyvsp[0].stmt));
+                (yyval.select)->setCondition((yyvsp[-2].orExp));
+                (yyval.select)->setIf((yyvsp[0].stmt));
             }
 #line 2095 "parser.cpp"
     break;
@@ -2098,7 +2095,7 @@ yyreduce:
 #line 361 "parser.y"
                                           {
                 (yyval.select)=new SelectStmtAST();
-                (yyval.select)->setCondition((yyvsp[-4].or));
+                (yyval.select)->setCondition((yyvsp[-4].orExp));
                 (yyval.select)->setIf((yyvsp[-2].stmt));
                 (yyval.select)->setElse((yyvsp[0].stmt));
             }
@@ -2109,7 +2106,7 @@ yyreduce:
 #line 369 "parser.y"
                                       {
 					(yyval.iteration) = new IterationStmtAST();
-					(yyval.iteration)->setCondition((yyvsp[-2].or));
+					(yyval.iteration)->setCondition((yyvsp[-2].orExp));
 					(yyval.iteration)->setStmt((yyvsp[0].stmt));
 				}
 #line 2116 "parser.cpp"
@@ -2126,7 +2123,7 @@ yyreduce:
   case 55:
 #line 386 "parser.y"
                  {
-                (yyval.or)=(yyvsp[0].or);
+                (yyval.orExp)=(yyvsp[0].orExp);
             }
 #line 2132 "parser.cpp"
     break;
@@ -2354,7 +2351,7 @@ yyreduce:
 #line 494 "parser.y"
               {
             (yyval.rel) = new RelExpAST();
-            (yyval.rel)->high=unique<LowAST>((yyvsp[0].add));
+            (yyval.rel)->high=unique_ptr<LowAST>((yyvsp[0].add));
         }
 #line 2360 "parser.cpp"
     break;
@@ -2425,8 +2422,8 @@ yyreduce:
   case 88:
 #line 523 "parser.y"
               {
-            (yyval.and) = new AndAST();
-            (yyval.and)->high = unique_ptr<EqExpAST>((yyvsp[0].eq));
+            (yyval.andExp) = new AndAST();
+            (yyval.andExp)->high = unique_ptr<EqExpAST>((yyvsp[0].eq));
         }
 #line 2432 "parser.cpp"
     break;
@@ -2434,8 +2431,8 @@ yyreduce:
   case 89:
 #line 526 "parser.y"
                            {
-            (yyval.and) = new AndAST();
-            (yyval.and)->setExp((yyvsp[-2].and),(yyvsp[0].eq));
+            (yyval.andExp) = new AndAST();
+            (yyval.andExp)->setExp((yyvsp[-2].andExp),(yyvsp[0].eq));
         }
 #line 2441 "parser.cpp"
     break;
@@ -2443,8 +2440,8 @@ yyreduce:
   case 90:
 #line 531 "parser.y"
                {
-            (yyval.or) = new OrAST();
-            (yyval.or)->high = unique_ptr<AndExpAST>((yyvsp[0].and));
+            (yyval.orExp) = new OrAST();
+            (yyval.orExp)->high = unique_ptr<AndAST>((yyvsp[0].andExp));
         }
 #line 2450 "parser.cpp"
     break;
@@ -2452,8 +2449,8 @@ yyreduce:
   case 91:
 #line 534 "parser.y"
                           {
-            (yyval.or) = new OrAST();
-            (yyval.or)->setExp((yyvsp[-2].or),(yyvsp[0].and));
+            (yyval.orExp) = new OrAST();
+            (yyval.orExp)->setExp((yyvsp[-2].orExp),(yyvsp[0].andExp));
         }
 #line 2459 "parser.cpp"
     break;

@@ -16,6 +16,7 @@ public:
     LOW_OP op;
     void accept(Visitor &visitor) override;
     void setExpr(LowAST* low,LOW_OP op,HighAST *high);
+    void setHighExp(HighAST* high);
 };
 
 
