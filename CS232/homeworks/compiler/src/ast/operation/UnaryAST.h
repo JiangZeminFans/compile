@@ -9,7 +9,7 @@
 #include "PrimaryExpAST.h"
 #include "CallAST.h"
 
-class UnaryAST {
+class UnaryAST: public AST {
 public:
     unique_ptr<PrimaryExpAST> primaryExp;
     unique_ptr<CallAST> call;
