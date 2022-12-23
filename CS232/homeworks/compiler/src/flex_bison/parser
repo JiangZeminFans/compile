@@ -1,0 +1,8 @@
+#include "../base.h"
+#include "../ast/all_ast.h"
+
+extern int yylineno;
+extern int yylex();
+extern void yyerror(const char* s);
+
+unique_ptr<CompUnitAST> root;
