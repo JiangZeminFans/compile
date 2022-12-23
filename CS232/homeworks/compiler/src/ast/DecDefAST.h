@@ -18,7 +18,6 @@ public:
 
     void setDecl(DecAST* decl);
     void setDef(FuncDefAST* def);
-    void accept(Visitor &visitor) override;
 };
 
 

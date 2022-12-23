@@ -14,7 +14,7 @@ using namespace std;
 
 class AST {
 public:
-    virtual void accept(Visitor& visitor)=0;
+    void accept(Visitor& visitor);
     AST()=default;
     virtual ~AST()=default;
 

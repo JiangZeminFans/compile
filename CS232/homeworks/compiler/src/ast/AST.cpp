@@ -3,3 +3,7 @@
 //
 
 #include "AST.h"
+
+void AST::accept(Visitor &visitor) {
+    visitor.visit(this);
+}

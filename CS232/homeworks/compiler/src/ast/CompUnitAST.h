@@ -13,7 +13,6 @@ class CompUnitAST: public AST{
 public:
     vector<unique_ptr<DecDefAST>> decDefList;
     void add(DecDefAST* decDef);
-    void accept(Visitor &visitor) override;
 };
 
 

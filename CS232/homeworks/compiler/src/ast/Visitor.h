@@ -6,8 +6,13 @@
 #define COMPILER_VISITOR_H
 
 
+#include "AST.h"
+#include "all_ast.h"
 class Visitor {
-
+public:
+    //重写该方法
+    virtual void visit(AST& ast)=0;
+    //TODO:增加相应的遍历方法
 };
 
 

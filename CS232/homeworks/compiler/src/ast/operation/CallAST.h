@@ -13,7 +13,6 @@ class CallAST: public AST{
 public:
     unique_ptr<string> id;
     vector<unique_ptr<LowAST>> funcParamList;
-    void accept(Visitor &visitor) override;
 
     void setId(string* id);
     void setFuncParams();

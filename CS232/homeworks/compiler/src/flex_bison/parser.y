@@ -438,7 +438,16 @@ UnaryExp:   PrimaryExp{
 
 Call:   ID LS RS{
                 $$ = new CallAST();
-                $$->setId($1);
+                $$->setId($1);电计2003杨其坤 邀请您参加腾讯会议
+                              会议主题：电计2003杨其坤的快速会议
+                              会议时间：2022/12/23 17:05-18:05 (GMT+08:00) 中国标准时间 - 北京
+
+                              点击链接直接加入会议：
+                              https://meeting.tencent.com/dm/rgquBfs90UfM
+
+                              #腾讯会议：789-715-581
+
+                              复制该信息，打开手机腾讯会议即可参与
         }|ID LS FuncRParamList RS{
 		        $$ = new CallAST();
         }

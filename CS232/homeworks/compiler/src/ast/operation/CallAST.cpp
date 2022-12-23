@@ -4,9 +4,6 @@
 
 #include "CallAST.h"
 
-void CallAST::accept(Visitor &visitor) {
-
-}
 
 void CallAST::setId(string *id) {
     this->id=unique_ptr<string>(id);
