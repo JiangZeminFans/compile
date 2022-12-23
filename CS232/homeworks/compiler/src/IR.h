@@ -86,6 +86,7 @@ public:
     unsigned num_bits_;
 };
 
+
 //[2 x [3 x i32]]: num_elements_ = 2, contained_ = [3 x i32]
 class Array_Type : public Type
 {
