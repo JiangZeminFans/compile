@@ -1026,3 +1026,22 @@ void Function::set_instr_name()
     }
     seq_cnt_ += seq.size();
 }
+
+bool Instruction::isArithmetic() {
+    switch (op_id_) {
+        case Add:
+        case Sub:
+        case Mul:
+        case SDiv:
+        case SRem:
+        case FAdd:
+        case FSub:
+        case FMul:
+        case FDiv:
+        case ICmp:
+        case FCmp:
+            return true;
+        default:
+            return false;
+    }
+}

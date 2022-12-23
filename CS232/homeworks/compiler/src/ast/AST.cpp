@@ -5,7 +5,7 @@
 #include "AST.h"
 
 void AST::accept(Visitor &visitor) {
-    visitor.visit(this);
+    visitor.visit(*this);
 }
 
 void AndAST::setExp(AndAST* low, EqExpAST* high) {

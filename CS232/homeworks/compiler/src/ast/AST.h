@@ -11,12 +11,11 @@
 #include "../base.h"
 using namespace std;
 
-class AST {
+class AST{
 public:
     void accept(Visitor& visitor);
     AST()=default;
     virtual ~AST()=default;
-
 };
 
 class AndAST : public AST {
