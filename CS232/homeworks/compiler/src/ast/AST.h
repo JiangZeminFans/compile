@@ -33,7 +33,7 @@ public:
     void setSentences(Sentences* sentences);
 };
 
-//º¯ÊıÒıÓÃ
+//å‡½æ•°å¼•ç”¨
 class CallAST : public AST {
 public:
     unique_ptr<string> id;
@@ -53,7 +53,7 @@ class DecAST : public AST {
 public:
     TYPE bType;
     bool isConst;
-    vector<unique_ptr<IdDefAST>> defList;//ÉùÃ÷±í
+    vector<unique_ptr<IdDefAST>> defList;//å£°æ˜è¡¨
     void setIdDefList(IdDefList* defList);
 };
 
@@ -296,7 +296,7 @@ public:
 
 };
 
-class UnaryAST {
+class UnaryAST : public AST {
 public:
     unique_ptr<PrimaryExpAST> primaryExp;
     unique_ptr<CallAST> call;
@@ -313,9 +313,9 @@ public:
 
 class Visitor {
 public:
-    //ÖØĞ´¸Ã·½·¨
+    //é‡å†™è¯¥æ–¹æ³•
     virtual void visit(AST& ast) = 0;
-    //TODO:Ôö¼ÓÏàÓ¦µÄ±éÀú·½·¨
+    //TODO:å¢åŠ ç›¸åº”çš„éå†æ–¹æ³•
 };
 
 
