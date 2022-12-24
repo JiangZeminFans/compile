@@ -5,7 +5,7 @@
 #include <string>
 #include <list>
 #include <algorithm>
-#include "IR.h"
+#include "..\IR\IR.h"
 
 
 class Pass{
