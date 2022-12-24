@@ -2,7 +2,7 @@
 #define SYSYCOMPILER_DELETEUNUSEDRETURN_H
 #include "Pass.h"
 /// <summary>
-/// É¾³ıÎ´Ê¹ÓÃµÄ·µ»ØÖ¸Áî¿éÖĞµÄÖ¸Áî
+/// åˆ é™¤æœªä½¿ç”¨çš„è¿”å›æŒ‡ä»¤å—ä¸­çš„æŒ‡ä»¤
 /// </summary>
 class DeleteUnusedReturn :public Pass{
 public:
@@ -15,4 +15,4 @@ private:
 };
 
 
-#endif //SYSYCOMPILER_UNUSEDRETELI_H
+#endif //SYSYCOMPILER_DELETEUNUSEDRETURN_H
