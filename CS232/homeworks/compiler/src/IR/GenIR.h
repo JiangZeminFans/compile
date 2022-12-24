@@ -2,7 +2,7 @@
 #define TEST_IR_H
 #pragma once
 #include "IR.h"
-#include "all_ast.h"
+#include "..\ast\AST.h"
 #include <map>
 
 // 作用域
