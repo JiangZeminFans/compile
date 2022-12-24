@@ -5,7 +5,7 @@
 #include "all_ast.h"
 #include <map>
 
-// ×÷ÓÃÓò
+// ä½œç”¨åŸŸ
 class Scope 
 {
 private:
@@ -13,25 +13,25 @@ private:
 
     
 public:
-    //´´½¨ĞÂ×÷ÓÃÓò
+    //åˆ›å»ºæ–°ä½œç”¨åŸŸ
     void enter() 
     {
         symbol.push_back({});
     }
 
-    // ÖÕ½á¶ÔÏó
+    // ç»ˆç»“å¯¹è±¡
     void exit() 
     {
         symbol.pop_back();
     }
 
-    // ÅĞ¶ÏÈ«¾Ö¶ÔÏó
+    // åˆ¤æ–­å…¨å±€å¯¹è±¡
     bool in_global() 
     {
         return symbol.size() == 1;
     }
 
-    // ÅĞ¶ÏÄÜ·ñÌí¼ÓĞÂ¶ÔÏó ¿ÉÒÔÌí¼Ó·µ»Ø1 ²»¿ÉÒÔÌí¼Ó·µ»Ø0£¨ÒÑ¾­´æÔÚ£© ÔÊĞíº¯ÊıÓë±äÁ¿ÖØÃû
+    // åˆ¤æ–­èƒ½å¦æ·»åŠ æ–°å¯¹è±¡ å¯ä»¥æ·»åŠ è¿”å›1 ä¸å¯ä»¥æ·»åŠ è¿”å›0ï¼ˆå·²ç»å­˜åœ¨ï¼‰ å…è®¸å‡½æ•°ä¸å˜é‡é‡å
     bool push(std::string name, Value* val) 
     {
         bool result;
@@ -39,7 +39,7 @@ public:
         return result;
     }
 
-    // Ñ°ÕÒ¶ÔÏó
+    // å¯»æ‰¾å¯¹è±¡
     Value* find(std::string name) {
         for (auto s = symbol.rbegin(); s != symbol.rend(); s++) {
             auto iter = s->find(name);
@@ -54,7 +54,7 @@ public:
 
 class GenIR : public Visitor {
 public:
-    // ÖØĞ´visit·½·¨ Ã¿Ò»¸ö¶ÔÓ¦Ò»¸öAST
+    // é‡å†™visitæ–¹æ³• æ¯ä¸€ä¸ªå¯¹åº”ä¸€ä¸ªAST
     void visit(CompUnitAST& ast);
     void visit(DecDefAST& ast);
     void visit(DecAST& ast);
