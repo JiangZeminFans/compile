@@ -10,6 +10,11 @@
 #include <memory>
 #include "../base.h"
 using namespace std;
+class AST;
+class AndAST;
+class Visitor;
+class EqExpAST;
+class SentenceAST;
 
 class AST{
 public:
@@ -26,11 +31,15 @@ public:
     void setExp(AndAST* low, EqExpAST* high);
 };
 
+class Sentences;
+
 class BlockAST : public AST {
 public:
     vector<unique_ptr<SentenceAST>> sentences;
     void setSentences(Sentences* sentences);
 };
+
+class LowAST;
 
 //函数引用
 class CallAST : public AST {
@@ -42,11 +51,17 @@ public:
     // void setFuncParams();
 };
 
+class DecDefAST;
+
 class CompUnitAST : public AST {
 public:
     vector<unique_ptr<DecDefAST>> decDefList;
     void add(DecDefAST* decDef);
 };
+
+class IdDefAST;
+
+class IdDefList;
 
 class DecAST : public AST {
 public:
@@ -55,6 +70,8 @@ public:
     vector<unique_ptr<IdDefAST>> defList;//声明表
     void setIdDefList(IdDefList* defList);
 };
+
+class FuncDefAST;
 
 class DecDefAST : public AST {
 public:
@@ -71,6 +88,8 @@ public:
 
     void add(LowAST* exp);
 };
+
+class RelExpAST;
 
 class EqExpAST : public AST {
 public:
@@ -89,6 +108,8 @@ public:
 
 };
 
+class FuncParamList;
+
 class FuncDefAST : public AST {
 public:
     TYPE funcType;
@@ -106,14 +127,14 @@ public:
 
 };
 
-class FuncParamAST : public AST {
+/*class FuncParamAST : public AST {
 public:
     TYPE bType;
     unique_ptr<string> id;
     bool isArray = false;
     vector<unique_ptr<LowAST>> arrays;
 
-};
+};*/
 
 class FuncParamList : public AST {
 public:
@@ -126,6 +147,8 @@ public:
     vector<unique_ptr<LowAST>> realParams;
     void add(LowAST* realParams);
 };
+
+class UnaryAST;
 
 //*,/,%
 class HighAST :public AST {
@@ -141,6 +164,8 @@ public:
     void setUnaryExp(UnaryAST* unary);
 
 };
+
+class InitValAST;
 
 class IdDefAST : public AST {
 public:
@@ -163,6 +188,8 @@ public:
     void add(IdDefAST* idDefAst);
 };
 
+class InitValList;
+
 class InitValAST : public AST {
 public:
     unique_ptr<LowAST> exp;
@@ -171,6 +198,10 @@ public:
     void setInitValList(InitValList* list);
 
 };
+
+class OrAST;
+
+class StmtAST;
 
 class IterationStmtAST : public AST {
 public:
@@ -252,7 +283,7 @@ public:
     unique_ptr<StmtAST> ifStmt;
     unique_ptr<StmtAST> elseStmt;
 
-    unique_ptr<OrStmt> cond;
+    unique_ptr<OrAST> cond;
 
     void setIf(StmtAST* ifStmt);
     void setElse(StmtAST* elseStmt);
