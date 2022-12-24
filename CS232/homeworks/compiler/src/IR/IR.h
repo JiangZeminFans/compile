@@ -16,7 +16,9 @@
 #include <sstream>
 #include <string>
 #include <utility>
+
 #include "base.h"
+
 //类声明
 class Type;             //语义类
 class Integer_Type;     //整数
@@ -36,7 +38,7 @@ class Module;           //全局表
 class Global_Variable;  //全局变量
 
 class Function;         
-class BasicBlock;
+class Basic_Block;
 class Argument;
 
 class Instruction;
@@ -66,7 +68,7 @@ public:
     enum TypeID
     {
         VoidTyID,      // Void
-        LabelTyID,     // Labels, e.g., BasicBlock
+        LabelTyID,     // Labels, e.g., Basic_Block
         IntegerTyID,   // Integers, include 32 bits and 1 bit
         FloatTyID,     // Floats, only 32 bits
         FunctionTyID,  // Functions
@@ -300,7 +302,7 @@ public:
 
     virtual std::string print() override;
 
-    void add_basic_block(BasicBlock* bb) { basic_blocks_.push_back(bb); }
+    void add_basic_block(Basic_Block* bb) { basic_blocks_.push_back(bb); }
 
     Type* get_return_type() const { return static_cast<Function_Type*>(type_)->result_; }
 
@@ -308,22 +310,22 @@ public:
 
     void set_instr_name();
 
-    void remove_bb(BasicBlock* bb);
+    void remove_bb(Basic_Block* bb);
 
-    BasicBlock *getRetBB();
-    std::vector<BasicBlock*> basic_blocks_;  // basic blocks
+    Basic_Block *getRetBB();
+    std::vector<Basic_Block*> basic_blocks_;  // basic blocks
     std::vector<Argument*> arguments_;       // argument
     Module* parent_;
     unsigned seq_cnt_;
     std::vector<std::set<Value *>> vreg_set_;
     int use_ret_cnt;        //程序中真正使用返回值的次数
 };
-//-----------------------------------------------BasicBlock-----------------------------------------------
+//-----------------------------------------------Basic_Block-----------------------------------------------
 //注：Basic_Block一定是LabelTyID
-class BasicBlock : public Value
+class Basic_Block : public Value
 {
 public:
-    explicit BasicBlock(Module* m, const std::string& name, Function* parent) : Value(m->label_ty_, name), parent_(parent) { parent_->add_basic_block(this); }
+    explicit Basic_Block(Module* m, const std::string& name, Function* parent) : Value(m->label_ty_, name), parent_(parent) { parent_->add_basic_block(this); }
     
     bool add_instruction(Instruction* instr) ; //尾部插入指令，返回成功与否
     
@@ -333,23 +335,23 @@ public:
     
     bool add_instruction_before_inst(Instruction* new_inst,Instruction* inst) ;//将新指令插入到原来指令前，返回成功与否，需要保证原指令在bb内
     
-    void add_pre_basic_block(BasicBlock* bb) { pre_bbs_.push_back(bb); }
+    void add_pre_basic_block(Basic_Block* bb) { pre_bbs_.push_back(bb); }
     
-    void add_succ_basic_block(BasicBlock* bb) { succ_bbs_.push_back(bb); }
+    void add_succ_basic_block(Basic_Block* bb) { succ_bbs_.push_back(bb); }
     
-    void remove_pre_basic_block(BasicBlock *bb)
+    void remove_pre_basic_block(Basic_Block *bb)
     { 
         //pre_bbs_.remove(bb); 
         pre_bbs_.erase(std::remove(pre_bbs_.begin(), pre_bbs_.end(), bb) , pre_bbs_.end());
     }
 
-    void remove_succ_basic_block(BasicBlock *bb)
+    void remove_succ_basic_block(Basic_Block *bb)
     { 
         //succ_bbs_.remove(bb); 
         succ_bbs_.erase(std::remove(succ_bbs_.begin(), succ_bbs_.end(), bb) , succ_bbs_.end());
     }
 
-    int isDominate(BasicBlock* bb2)
+    int isDominate(Basic_Block* bb2)
     { //返回1表示支配bb2，返回0表示不支配，返回-1输入的块出错
         if (!bb2 || this->parent_ != bb2->parent_)
             return -1;
@@ -379,13 +381,13 @@ public:
 
     Function* parent_;
     /****************api about cfg****************/
-    std::vector<BasicBlock*> pre_bbs_;
-    std::vector<BasicBlock*> succ_bbs_;
+    std::vector<Basic_Block*> pre_bbs_;
+    std::vector<Basic_Block*> succ_bbs_;
     /****************api about dominate tree****************/
-    std::set<BasicBlock*> dom_frontier_;
-    std::set<BasicBlock*> rdom_frontier_;
-    std::set<BasicBlock*> rdoms_;
-    BasicBlock* idom_;
+    std::set<Basic_Block*> dom_frontier_;
+    std::set<Basic_Block*> rdom_frontier_;
+    std::set<Basic_Block*> rdoms_;
+    Basic_Block* idom_;
     std::set<Value*> live_in;
     std::set<Value*> live_out;
 };
@@ -447,7 +449,7 @@ public:
 
 
     // 创建指令并插入基本块（ty是指令返回值类型）
-    Instruction(Type* ty, OpID id, unsigned num_ops, BasicBlock* parent) : Value(ty, ""), op_id_(id), num_ops_(num_ops), parent_(parent)
+    Instruction(Type* ty, OpID id, unsigned num_ops, Basic_Block* parent) : Value(ty, ""), op_id_(id), num_ops_(num_ops), parent_(parent)
     {
         operands_.resize(num_ops_, nullptr);  //此句不能删去！否则operands_为空时无法用set_operand设置操作数，而只能用push_back设置操作数！
         use_pos_.resize(num_ops_);
@@ -554,7 +556,7 @@ public:
 
     
     virtual std::string print() = 0;
-    BasicBlock* parent_;
+    Basic_Block* parent_;
     OpID op_id_;
     unsigned num_ops_;
     std::vector<Value*> operands_;  // operands of this value
@@ -570,13 +572,13 @@ public:
 class Binary_Instruction : public Instruction
 {
 public:
-    Binary_Instruction(Type* ty, OpID op, Value* v1, Value* v2, BasicBlock* bb) : Instruction(ty, op, 2, bb)
+    Binary_Instruction(Type* ty, OpID op, Value* v1, Value* v2, Basic_Block* bb) : Instruction(ty, op, 2, bb)
     {
         set_operand(0, v1);
         set_operand(1, v2);
     }
     // 只创建，不加入基本块末尾
-    Binary_Instruction(Type* ty, OpID op, Value* v1, Value* v2, BasicBlock* bb, bool flag)
+    Binary_Instruction(Type* ty, OpID op, Value* v1, Value* v2, Basic_Block* bb, bool flag)
      : Instruction(ty, op, 2) {
         set_operand(0, v1);
         set_operand(1, v2);
@@ -594,7 +596,7 @@ public:
 class Unary_Instruction : public Instruction
 {
 public:
-    Unary_Instruction(Type* ty, OpID op, Value* val, BasicBlock* bb) : Instruction(ty, op, 1, bb) { set_operand(0, val); }
+    Unary_Instruction(Type* ty, OpID op, Value* val, Basic_Block* bb) : Instruction(ty, op, 1, bb) { set_operand(0, val); }
     virtual std::string print() override;
 };
 
@@ -617,7 +619,7 @@ public:
         ICMP_SLE = 41   ///< signed less or equal
     };
     static const std::map<ICmp_Instruction::ICmp_Op, std::string> ICmp_Op_Name;
-    ICmp_Instruction(ICmp_Op op, Value* v1, Value* v2, BasicBlock* bb) : Instruction(bb->parent_->parent_->int1_ty_, Instruction::ICmp, 2, bb), icmp_op_(op) {
+    ICmp_Instruction(ICmp_Op op, Value* v1, Value* v2, Basic_Block* bb) : Instruction(bb->parent_->parent_->int1_ty_, Instruction::ICmp, 2, bb), icmp_op_(op) {
         set_operand(0, v1);
         set_operand(1, v2);
     }
@@ -650,7 +652,7 @@ public:
         FCMP_TRUE = 25    // Always true (always folded)
     };
     static const std::map<FCmp_Instruction::FCmp_Op, std::string> FCmp_Op_Name;
-    FCmp_Instruction(FCmp_Op op, Value* v1, Value* v2, BasicBlock* bb) : Instruction(bb->parent_->parent_->int1_ty_, Instruction::FCmp, 2, bb), fcmp_op_(op) {
+    FCmp_Instruction(FCmp_Op op, Value* v1, Value* v2, Basic_Block* bb) : Instruction(bb->parent_->parent_->int1_ty_, Instruction::FCmp, 2, bb), fcmp_op_(op) {
         set_operand(0, v1);
         set_operand(1, v2);
     }
@@ -663,7 +665,7 @@ public:
 class Call_Instruction : public Instruction
 {
 public:
-    Call_Instruction(Function* func, std::vector<Value*> args, BasicBlock* bb) : Instruction(static_cast<Function_Type*>(func->type_)->result_, Instruction::Call, args.size() + 1, bb) {
+    Call_Instruction(Function* func, std::vector<Value*> args, Basic_Block* bb) : Instruction(static_cast<Function_Type*>(func->type_)->result_, Instruction::Call, args.size() + 1, bb) {
         int num_ops = args.size() + 1;
         for (int i = 0; i < num_ops - 1; i++) {
             set_operand(i, args[i]);
@@ -679,7 +681,7 @@ class Branch_Instruction : public Instruction
 {
 public:
     // br i1 %7, label %8, label %9
-    Branch_Instruction(Value* cond, BasicBlock* if_true, BasicBlock* if_false, BasicBlock* bb) : Instruction(if_true->parent_->parent_->void_ty_, Instruction::Br, 3, bb)
+    Branch_Instruction(Value* cond, Basic_Block* if_true, Basic_Block* if_false, Basic_Block* bb) : Instruction(if_true->parent_->parent_->void_ty_, Instruction::Br, 3, bb)
     {
         if_true->add_pre_basic_block(bb);
         if_false->add_pre_basic_block(bb);
@@ -691,7 +693,7 @@ public:
     }
 
     // br label %31
-    Branch_Instruction(BasicBlock* if_true, BasicBlock* bb) : Instruction(if_true->parent_->parent_->void_ty_, Instruction::Br, 1, bb)
+    Branch_Instruction(Basic_Block* if_true, Basic_Block* bb) : Instruction(if_true->parent_->parent_->void_ty_, Instruction::Br, 1, bb)
     {
         if_true->add_pre_basic_block(bb);
         bb->add_succ_basic_block(if_true);
@@ -706,14 +708,14 @@ public:
 class Return_Instruction : public Instruction
 {
 public:
-    Return_Instruction(Value* val, BasicBlock* bb) : Instruction(bb->parent_->parent_->void_ty_, Instruction::Ret, 1, bb) { set_operand(0, val); }
+    Return_Instruction(Value* val, Basic_Block* bb) : Instruction(bb->parent_->parent_->void_ty_, Instruction::Ret, 1, bb) { set_operand(0, val); }
     
-    Return_Instruction(Value* val, BasicBlock* bb, bool flag) : Instruction(bb->parent_->parent_->void_ty_, Instruction::Ret, 1)
+    Return_Instruction(Value* val, Basic_Block* bb, bool flag) : Instruction(bb->parent_->parent_->void_ty_, Instruction::Ret, 1)
     { 
         set_operand(0, val);
         this->parent_ = bb;
     }
-    Return_Instruction(BasicBlock* bb) : Instruction(bb->parent_->parent_->void_ty_, Instruction::Ret, 0, bb) {}
+    Return_Instruction(Basic_Block* bb) : Instruction(bb->parent_->parent_->void_ty_, Instruction::Ret, 0, bb) {}
     virtual std::string print() override;
 };
 
@@ -722,7 +724,7 @@ public:
 class GetElementPtr_Instruction : public Instruction
 {
 public:
-    GetElementPtr_Instruction(Value* ptr, std::vector<Value*> idxs, BasicBlock* bb) :
+    GetElementPtr_Instruction(Value* ptr, std::vector<Value*> idxs, Basic_Block* bb) :
         Instruction(bb->parent_->parent_->get_pointer_type(get_GEP_return_type(ptr, idxs.size())),
         Instruction::GetElementPtr, idxs.size() + 1, bb)
     {
@@ -755,14 +757,14 @@ public:
 class Store_Instruction : public Instruction
 {
 public:
-    Store_Instruction(Value* val, Value* ptr, BasicBlock* bb) : Instruction(bb->parent_->parent_->void_ty_, Instruction::Store, 2, bb) {
+    Store_Instruction(Value* val, Value* ptr, Basic_Block* bb) : Instruction(bb->parent_->parent_->void_ty_, Instruction::Store, 2, bb) {
         assert(val->type_ == static_cast<Pointer_Type*>(ptr->type_)->contained_);
         set_operand(0, val);
         set_operand(1, ptr);
     }
 
     //创建store指令，不插入到基本块中，但是设定parent
-    Store_Instruction(Value* val, Value* ptr, BasicBlock* bb, bool) : Instruction(bb->parent_->parent_->void_ty_, Instruction::Store, 2)
+    Store_Instruction(Value* val, Value* ptr, Basic_Block* bb, bool) : Instruction(bb->parent_->parent_->void_ty_, Instruction::Store, 2)
     {
         assert(val->type_ == static_cast<Pointer_Type*>(ptr->type_)->contained_);
         set_operand(0, val);
@@ -778,7 +780,7 @@ public:
 class Load_Instruction : public Instruction
 {
 public:
-    Load_Instruction(Value* ptr, BasicBlock* bb) : Instruction(static_cast<Pointer_Type*>(ptr->type_)->contained_, Instruction::Load, 1, bb)
+    Load_Instruction(Value* ptr, Basic_Block* bb) : Instruction(static_cast<Pointer_Type*>(ptr->type_)->contained_, Instruction::Load, 1, bb)
     { set_operand(0, ptr); }
 
     virtual std::string print() override;
@@ -789,10 +791,10 @@ public:
 class Alloca_Instruction : public Instruction
 {
 public:
-    Alloca_Instruction(Type* ty, BasicBlock* bb) : Instruction(bb->parent_->parent_->get_pointer_type(ty), Instruction::Alloca, 0, bb), alloca_ty_(ty) {}
+    Alloca_Instruction(Type* ty, Basic_Block* bb) : Instruction(bb->parent_->parent_->get_pointer_type(ty), Instruction::Alloca, 0, bb), alloca_ty_(ty) {}
 
     //创建指令，不插入到最后，但是会设定parent
-    Alloca_Instruction(Type* ty, BasicBlock* bb, bool) : Instruction(bb->parent_->parent_->get_pointer_type(ty), Instruction::Alloca, 0), alloca_ty_(ty) { this->parent_ = bb;}
+    Alloca_Instruction(Type* ty, Basic_Block* bb, bool) : Instruction(bb->parent_->parent_->get_pointer_type(ty), Instruction::Alloca, 0), alloca_ty_(ty) { this->parent_ = bb;}
 
     virtual std::string print() override;
     Type* alloca_ty_;
@@ -802,7 +804,7 @@ public:
 class Zext_Instruction : public Instruction
 {
 public:
-    Zext_Instruction(OpID op, Value* val, Type* ty, BasicBlock* bb) : Instruction(ty, op, 1, bb), dest_ty_(ty) { set_operand(0, val); }
+    Zext_Instruction(OpID op, Value* val, Type* ty, Basic_Block* bb) : Instruction(ty, op, 1, bb), dest_ty_(ty) { set_operand(0, val); }
     virtual std::string print() override;
     Type* dest_ty_;
 };
@@ -810,7 +812,7 @@ public:
 class FpToSi_Instruction : public Instruction
 {
 public:
-    FpToSi_Instruction(OpID op, Value* val, Type* ty, BasicBlock* bb) : Instruction(ty, op, 1, bb), dest_ty_(ty) { set_operand(0, val); }
+    FpToSi_Instruction(OpID op, Value* val, Type* ty, Basic_Block* bb) : Instruction(ty, op, 1, bb), dest_ty_(ty) { set_operand(0, val); }
     virtual std::string print() override;
     Type* dest_ty_;
 };
@@ -818,7 +820,7 @@ public:
 class SiToFp_Instruction : public Instruction
 {
 public:
-    SiToFp_Instruction(OpID op, Value* val, Type* ty, BasicBlock* bb) : Instruction(ty, op, 1, bb), dest_ty_(ty) { set_operand(0, val); }
+    SiToFp_Instruction(OpID op, Value* val, Type* ty, Basic_Block* bb) : Instruction(ty, op, 1, bb), dest_ty_(ty) { set_operand(0, val); }
     virtual std::string print() override;
     Type* dest_ty_;
 };
@@ -827,7 +829,7 @@ public:
 class Bitcast : public Instruction
 {
 public:
-    Bitcast(OpID op, Value *val, Type *ty, BasicBlock *bb) : Instruction(ty, op, 1, bb), dest_ty_(ty) {set_operand(0, val);}
+    Bitcast(OpID op, Value *val, Type *ty, Basic_Block *bb) : Instruction(ty, op, 1, bb), dest_ty_(ty) {set_operand(0, val);}
     virtual std::string print() override;
     Type *dest_ty_;
 };
@@ -837,7 +839,7 @@ public:
 class PhiInst : public Instruction
 {
 public:
-    PhiInst(OpID op, std::vector<Value *> vals, std::vector<BasicBlock *> val_bbs, Type *ty, BasicBlock *bb)
+    PhiInst(OpID op, std::vector<Value *> vals, std::vector<Basic_Block *> val_bbs, Type *ty, Basic_Block *bb)
     : Instruction(ty, op, 2*vals.size())
     {
         for ( int i = 0; i < vals.size(); i++)
@@ -847,10 +849,10 @@ public:
         }
         this->parent_ = bb;
     }
-    static PhiInst *create_phi(Type *ty, BasicBlock *bb)
+    static PhiInst *create_phi(Type *ty, Basic_Block *bb)
     {
         std::vector<Value *> vals;
-        std::vector<BasicBlock *> val_bbs;
+        std::vector<Basic_Block *> val_bbs;
         return new PhiInst(Instruction::PHI, vals, val_bbs, ty, bb);
     }
     void add_phi_pair_operand(Value *val, Value *pre_bb)
@@ -868,14 +870,14 @@ public:
 class IRStmtBuilder
 {
 public:
-    BasicBlock* BB_;
+    Basic_Block* BB_;
     Module* m_;
 
-    IRStmtBuilder(BasicBlock* bb, Module* m) : BB_(bb), m_(m){};
+    IRStmtBuilder(Basic_Block* bb, Module* m) : BB_(bb), m_(m){};
     ~IRStmtBuilder() = default;
     Module* get_module() { return m_; }
-    BasicBlock* get_insert_block() { return this->BB_; }
-    void set_insert_point(BasicBlock* bb) { this->BB_ = bb; }                                                                           //在某个基本块中插入指令
+    Basic_Block* get_insert_block() { return this->BB_; }
+    void set_insert_point(Basic_Block* bb) { this->BB_ = bb; }                                                                           //在某个基本块中插入指令
     Binary_Instruction* create_iadd(Value* v1, Value* v2) { return new Binary_Instruction(this->m_->int32_ty_, Instruction::Add, v1, v2, this->BB_); }  //创建加法指令（以及其他算术指令）
     Binary_Instruction* create_isub(Value* v1, Value* v2) { return new Binary_Instruction(this->m_->int32_ty_, Instruction::Sub, v1, v2, this->BB_); }
     Binary_Instruction* create_imul(Value* v1, Value* v2) { return new Binary_Instruction(this->m_->int32_ty_, Instruction::Mul, v1, v2, this->BB_); }
@@ -909,12 +911,12 @@ public:
         return new Call_Instruction(static_cast<Function*>(func), args, this->BB_);
     }
 
-    Branch_Instruction* create_br(BasicBlock* if_true)
+    Branch_Instruction* create_br(Basic_Block* if_true)
     {
         return new Branch_Instruction(if_true, this->BB_);
     }
 
-    Branch_Instruction* create_cond_br(Value* cond, BasicBlock* if_true, BasicBlock* if_false)
+    Branch_Instruction* create_cond_br(Value* cond, Basic_Block* if_true, Basic_Block* if_false)
     {
         return new Branch_Instruction(cond, if_true, if_false, this->BB_);
     }
