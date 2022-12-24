@@ -9,27 +9,27 @@
 #define FLOATPTR_T (module->get_pointer_type(module->float32_ty_))
 
 // store temporary value
-Type* cur_Type;                         //µ±Ç°declÀàĞÍ
-bool is_Const;                          //µ±Ç°declÊÇ·ñÊÇconst
-bool use_Const = false;                 //¼ÆËãÊÇ·ñÊ¹ÓÃ³£Á¿
-std::vector<Type*> params;              //º¯ÊıĞÎ²ÎÀàĞÍ±í
-std::vector<std::string> paramNames;    //º¯ÊıĞÎ²ÎÃû±í
-Value* retAlloca = nullptr;             //·µ»ØÖµ
-BasicBlock* retBB = nullptr;            //·µ»ØÓï¾ä¿é
-bool isNewFunc = false;                 //ÅĞ¶ÏÊÇ·ñÎªĞÂº¯Êı£¬ÓÃÀ´´¦Àíº¯Êı×÷ÓÃÓòÎÊÌâ
-bool reqLV = false;                     //¸æËßLVal½Úµã²»ĞèÒª·¢ÉäloadÖ¸Áî
-Function* curFun = nullptr;             //µ±Ç°º¯Êı
-Value* recVal = nullptr;                //×î½üµÄ±í´ïÊ½µÄvalue
-BasicBlock* whileCondBB = nullptr;      //whileÓï¾äcond·ÖÖ§
-BasicBlock* trueBB = nullptr;           //Í¨ÓÃtrue·ÖÖ§£¬¼´whileºÍifÎªÕæÊ±ËùÌø×ªµÄ»ù±¾¿é
-BasicBlock* falseBB = nullptr;          //Í¨ÓÃfalse·ÖÖ§£¬¼´whileºÍifÎª¼ÙÊ±ËùÌø×ªµÄ»ù±¾¿é
-BasicBlock* whileFalseBB;               //whileÓï¾äfalse·ÖÖ§£¬ÓÃÓÚbreakÌø×ª
-int id = 1;                             //recent±êºÅ
-bool has_br = false;                    //Ò»¸öBBÖĞÊÇ·ñÒÑ¾­³öÏÖÁËbr
-bool is_single_exp = false;             //×÷Îªµ¥¶ÀµÄexpÓï¾ä³öÏÖ£¬ĞÎÈç "exp;"
+Type* cur_Type;                         //å½“å‰declç±»å‹
+bool is_Const;                          //å½“å‰declæ˜¯å¦æ˜¯const
+bool use_Const = false;                 //è®¡ç®—æ˜¯å¦ä½¿ç”¨å¸¸é‡
+std::vector<Type*> params;              //å‡½æ•°å½¢å‚ç±»å‹è¡¨
+std::vector<std::string> paramNames;    //å‡½æ•°å½¢å‚åè¡¨
+Value* retAlloca = nullptr;             //è¿”å›å€¼
+BasicBlock* retBB = nullptr;            //è¿”å›è¯­å¥å—
+bool isNewFunc = false;                 //åˆ¤æ–­æ˜¯å¦ä¸ºæ–°å‡½æ•°ï¼Œç”¨æ¥å¤„ç†å‡½æ•°ä½œç”¨åŸŸé—®é¢˜
+bool reqLV = false;                     //å‘Šè¯‰LValèŠ‚ç‚¹ä¸éœ€è¦å‘å°„loadæŒ‡ä»¤
+Function* curFun = nullptr;             //å½“å‰å‡½æ•°
+Value* recVal = nullptr;                //æœ€è¿‘çš„è¡¨è¾¾å¼çš„value
+BasicBlock* whileCondBB = nullptr;      //whileè¯­å¥condåˆ†æ”¯
+BasicBlock* trueBB = nullptr;           //é€šç”¨trueåˆ†æ”¯ï¼Œå³whileå’Œifä¸ºçœŸæ—¶æ‰€è·³è½¬çš„åŸºæœ¬å—
+BasicBlock* falseBB = nullptr;          //é€šç”¨falseåˆ†æ”¯ï¼Œå³whileå’Œifä¸ºå‡æ—¶æ‰€è·³è½¬çš„åŸºæœ¬å—
+BasicBlock* whileFalseBB;               //whileè¯­å¥falseåˆ†æ”¯ï¼Œç”¨äºbreakè·³è½¬
+int id = 1;                             //recentæ ‡å·
+bool has_br = false;                    //ä¸€ä¸ªBBä¸­æ˜¯å¦å·²ç»å‡ºç°äº†br
+bool is_single_exp = false;             //ä½œä¸ºå•ç‹¬çš„expè¯­å¥å‡ºç°ï¼Œå½¢å¦‚ "exp;"
 
 
-//ÅĞ¶Ï¸³ÖµÓëÉùÃ÷ÀàĞÍÊÇ·ñÒ»ÖÂ£¬²¢×ö×ª»»
+//åˆ¤æ–­èµ‹å€¼ä¸å£°æ˜ç±»å‹æ˜¯å¦ä¸€è‡´ï¼Œå¹¶åšè½¬æ¢
 void GenIR::checkInitType() const 
 {
     if (cur_Type == INT32_T) 
@@ -88,16 +88,16 @@ void GenIR::visit(DecAST& ast)
 
 void GenIR::visit(IdDefAST& ast) {
     string varName = *ast.id;
-    //È«¾Ö±äÁ¿»ò³£Á¿
+    //å…¨å±€å˜é‡æˆ–å¸¸é‡
     if (scope.in_global()) {
         if (ast.dimensions.empty()) 
         {   
-            //²»ÊÇÊı×é£¬¼´È«¾ÖÁ¿
+            //ä¸æ˜¯æ•°ç»„ï¼Œå³å…¨å±€é‡
             if (ast.initVal == nullptr) 
             { 
-                //ÎŞ³õÊ¼»¯
-                if (is_Const) cout << "no initVal when define const!" << endl; //ÎŞ³õÊ¼»¯È«¾Ö³£Á¿±¨´í
-                //ÎŞ³õÊ¼»¯È«¾ÖÁ¿Ò»¶¨ÊÇ±äÁ¿
+                //æ— åˆå§‹åŒ–
+                if (is_Const) cout << "no initVal when define const!" << endl; //æ— åˆå§‹åŒ–å…¨å±€å¸¸é‡æŠ¥é”™
+                //æ— åˆå§‹åŒ–å…¨å±€é‡ä¸€å®šæ˜¯å˜é‡
                 Global_Variable* var;
                 if (cur_Type == INT32_T)
                     var = new Global_Variable(varName, module.get(), cur_Type, false, CONST_INT(0));
@@ -106,18 +106,18 @@ void GenIR::visit(IdDefAST& ast) {
             }
             else 
             { 
-                //ÓĞ³õÊ¼»¯
+                //æœ‰åˆå§‹åŒ–
                 use_Const = true;
                 ast.initVal->accept(*this);
                 use_Const = false;
                 checkInitType();
                 if (is_Const) 
                 {
-                    scope.push(varName, recVal);   //µ¥¸ö³£Á¿¶¨Òå²»ÓÃnew GlobalVariable
+                    scope.push(varName, recVal);   //å•ä¸ªå¸¸é‡å®šä¹‰ä¸ç”¨new GlobalVariable
                 }
                 else 
                 { 
-                    //È«¾Ö±äÁ¿
+                    //å…¨å±€å˜é‡
                     auto initializer = static_cast<Constant*>(recVal);
                     Global_Variable* var;
                     var = new Global_Variable(varName, module.get(), cur_Type, false, initializer);
@@ -126,11 +126,11 @@ void GenIR::visit(IdDefAST& ast) {
             }
         }
         else {        
-            //ÊÇÊı×é£¬¼´È«¾ÖÊı×éÁ¿
+            //æ˜¯æ•°ç»„ï¼Œå³å…¨å±€æ•°ç»„é‡
             vector<int> dimensions;  
-            //Êı×é¸÷Î¬¶È; [2][3][4]¶ÔÓ¦
+            //æ•°ç»„å„ç»´åº¦; [2][3][4]å¯¹åº”
             use_Const = true;
-            //»ñÈ¡Êı×é¸÷Î¬¶È
+            //è·å–æ•°ç»„å„ç»´åº¦
             for (auto& exp : ast.dimensions) 
             {
                 exp->accept(*this);
@@ -138,13 +138,13 @@ void GenIR::visit(IdDefAST& ast) {
                 dimensions.push_back(dimension);
             }
             use_Const = false;
-            vector<Array_Type*> arrayTys(dimensions.size()); //Êı×éÀàĞÍ, {[2 x [3 x [4 x i32]]], [3 x [4 x i32]], [4 x i32]}
+            vector<Array_Type*> arrayTys(dimensions.size()); //æ•°ç»„ç±»å‹, {[2 x [3 x [4 x i32]]], [3 x [4 x i32]], [4 x i32]}
             for (int i = dimensions.size() - 1; i >= 0; i--) 
             {
                 if (i == dimensions.size() - 1) arrayTys[i] = module->get_array_type(cur_Type, dimensions[i]);
                 else arrayTys[i] = module->get_array_type(arrayTys[i + 1], dimensions[i]);
             }
-            //ÎŞ³õÊ¼»¯»òÕß³õÊ¼»¯½öÎª´óÀ¨ºÅ
+            //æ— åˆå§‹åŒ–æˆ–è€…åˆå§‹åŒ–ä»…ä¸ºå¤§æ‹¬å·
             if (ast.initVal == nullptr || ast.initVal->initValList.empty()) 
             {
                 auto init = new Constant_Zero(arrayTys[0]);
@@ -153,7 +153,7 @@ void GenIR::visit(IdDefAST& ast) {
             }
             else 
             {
-                use_Const = true; //È«¾ÖÊı×éÁ¿µÄ³õÊ¼Öµ±ØÎª³£Á¿
+                use_Const = true; //å…¨å±€æ•°ç»„é‡çš„åˆå§‹å€¼å¿…ä¸ºå¸¸é‡
                 auto init = globalInit(dimensions, arrayTys, 0, ast.initVal->initValList);
                 use_Const = false;
                 auto var = new Global_Variable(varName, module.get(), arrayTys[0], is_Const, init);
@@ -164,16 +164,16 @@ void GenIR::visit(IdDefAST& ast) {
     }
 
 
-    //¾Ö²¿±äÁ¿»ò³£Á¿
+    //å±€éƒ¨å˜é‡æˆ–å¸¸é‡
     if (ast.dimensions.empty()) 
     {   
-        //²»ÊÇÊı×é£¬¼´ÆÕÍ¨¾Ö²¿Á¿
+        //ä¸æ˜¯æ•°ç»„ï¼Œå³æ™®é€šå±€éƒ¨é‡
         if (ast.initVal == nullptr) {   
-            //ÎŞ³õÊ¼»¯
-            if (is_Const) cout << "no initVal when define const!" << endl;   //ÎŞ³õÊ¼»¯¾Ö²¿³£Á¿±¨´í
+            //æ— åˆå§‹åŒ–
+            if (is_Const) cout << "no initVal when define const!" << endl;   //æ— åˆå§‹åŒ–å±€éƒ¨å¸¸é‡æŠ¥é”™
             else 
             { 
-                //ÎŞ³õÊ¼»¯±äÁ¿
+                //æ— åˆå§‹åŒ–å˜é‡
                 Alloca_Instruction* varAlloca;
                 varAlloca = builder->create_alloca(cur_Type);
                 scope.push(varName, varAlloca);
@@ -181,12 +181,12 @@ void GenIR::visit(IdDefAST& ast) {
         }
         else 
         { 
-            //ÓĞ³õÊ¼»¯
+            //æœ‰åˆå§‹åŒ–
             ast.initVal->accept(*this);
             checkInitType();
             if (is_Const) 
             {
-                scope.push(varName, recVal);  //µ¥¸ö³£Á¿¶¨Òå²»ÓÃcreate_alloca
+                scope.push(varName, recVal);  //å•ä¸ªå¸¸é‡å®šä¹‰ä¸ç”¨create_alloca
             }
             else 
             {
@@ -199,11 +199,11 @@ void GenIR::visit(IdDefAST& ast) {
     }
     else 
     {    
-        //¾Ö²¿Êı×éÁ¿
-        vector<int> dimensions(ast.dimensions.size()), dimensionsCnt((ast.dimensions.size()));  //Êı×é¸÷Î¬¶È, [2][3][4]¶ÔÓ¦; ´ÎÎ¬¶ÈÊı×éÔªËØ¸öÊı, [24][12][4]
-        int totalByte = 1; //´æ´¢×Ü¹²µÄ×Ö½ÚÊı
+        //å±€éƒ¨æ•°ç»„é‡
+        vector<int> dimensions(ast.dimensions.size()), dimensionsCnt((ast.dimensions.size()));  //æ•°ç»„å„ç»´åº¦, [2][3][4]å¯¹åº”; æ¬¡ç»´åº¦æ•°ç»„å…ƒç´ ä¸ªæ•°, [24][12][4]
+        int totalByte = 1; //å­˜å‚¨æ€»å…±çš„å­—èŠ‚æ•°
         use_Const = true;
-        //»ñÈ¡Êı×é¸÷Î¬¶È
+        //è·å–æ•°ç»„å„ç»´åº¦
         for (int i = dimensions.size() - 1; i >= 0; i--) 
         {
             ast.dimensions[i]->accept(*this);
@@ -212,9 +212,9 @@ void GenIR::visit(IdDefAST& ast) {
             dimensions[i] = dimension;
             dimensionsCnt[i] = totalByte;
         }
-        totalByte *= 4; //¼ÆËã×Ö½ÚÊı
+        totalByte *= 4; //è®¡ç®—å­—èŠ‚æ•°
         use_Const = false;
-        Array_Type* arrayTy; //Êı×éÀàĞÍ
+        Array_Type* arrayTy; //æ•°ç»„ç±»å‹
         for (int i = dimensions.size() - 1; i >= 0; i--) 
         {
             if (i == dimensions.size() - 1) arrayTy = module->get_array_type(cur_Type, dimensions[i]);
@@ -224,27 +224,27 @@ void GenIR::visit(IdDefAST& ast) {
         scope.push(varName, arrayAlloc);
         if (ast.initVal == nullptr) 
         { 
-            //ÎŞ³õÊ¼»¯
-            if (is_Const) cout << "no initVal when define const!" << endl;   //ÎŞ³õÊ¼»¯¾Ö²¿³£Á¿±¨´í
-            return; //ÎŞ³õÊ¼»¯±äÁ¿Êı×éÎŞĞèÔÙ×ö´¦Àí
+            //æ— åˆå§‹åŒ–
+            if (is_Const) cout << "no initVal when define const!" << endl;   //æ— åˆå§‹åŒ–å±€éƒ¨å¸¸é‡æŠ¥é”™
+            return; //æ— åˆå§‹åŒ–å˜é‡æ•°ç»„æ— éœ€å†åšå¤„ç†
         }
         Value* i32P = builder->create_bitcast(arrayAlloc, INT32PTR_T);
         auto memclr = scope.find("memclr");
-        builder->create_call(memclr, { i32P, CONST_INT(totalByte) }); //È«²¿ÇåÁã£¬µ«float¿ÉÒÔÇåÁãÂğ
-        //Êı×é³õÊ¼»¯Ê±£¬³ÉÔ±expÒ»¶¨ÊÇ¿Õ£¬ÈôinitValListÒ²ÊÇ¿Õ£¬¼´ÊÇ´óÀ¨ºÅ£¬ÒÑ¾­ÖÃÁãÁËÖ±½Ó·µ»Ø
+        builder->create_call(memclr, { i32P, CONST_INT(totalByte) }); //å…¨éƒ¨æ¸…é›¶ï¼Œä½†floatå¯ä»¥æ¸…é›¶å—
+        //æ•°ç»„åˆå§‹åŒ–æ—¶ï¼Œæˆå‘˜expä¸€å®šæ˜¯ç©ºï¼Œè‹¥initValListä¹Ÿæ˜¯ç©ºï¼Œå³æ˜¯å¤§æ‹¬å·ï¼Œå·²ç»ç½®é›¶äº†ç›´æ¥è¿”å›
         if (ast.initVal->initValList.empty()) return;
         vector<Value*> idxs(dimensions.size() + 1);
         for (int i = 0; i < dimensions.size() + 1; i++) 
         {
             idxs[i] = CONST_INT(0);
         }
-        Value* ptr = builder->create_gep(arrayAlloc, idxs); //»ñÈ¡Êı×é¿ªÍ·µØÖ·
+        Value* ptr = builder->create_gep(arrayAlloc, idxs); //è·å–æ•°ç»„å¼€å¤´åœ°å€
         localInit(ptr, ast.initVal->initValList, dimensionsCnt, 1);
     }
 }
 
-//Ç¶Ì×´óÀ¨ºÅÊı×éµÄÎ¬¶È£¬¼´µ¹ÊıÁ¬Ğø0µÄµÚÒ»¸ö¡£ Èç[0,1,0,0]£¬·µ»Ø2£»[0,0,0,1]£¬·µ»Ø4£»
-//ÈôÈ«ÊÇ0£¬[0,0,0,0],·µ»Ø1
+//åµŒå¥—å¤§æ‹¬å·æ•°ç»„çš„ç»´åº¦ï¼Œå³å€’æ•°è¿ç»­0çš„ç¬¬ä¸€ä¸ªã€‚ å¦‚[0,1,0,0]ï¼Œè¿”å›2ï¼›[0,0,0,1]ï¼Œè¿”å›4ï¼›
+//è‹¥å…¨æ˜¯0ï¼Œ[0,0,0,0],è¿”å›1
 int GenIR::getNextD(vector<int>& elementsCnts, int up) 
 {
     for (int i = elementsCnts.size() - 1; i > up; i--) 
@@ -254,7 +254,7 @@ int GenIR::getNextD(vector<int>& elementsCnts, int up)
     return up + 1;
 }
 
-//Ôö¼ÓÔªËØºó£¬ºÏ²¢ËùÓĞÄÜºÏ²¢µÄÊı×éÔªËØ£¬¼´¶ÔÆë
+//å¢åŠ å…ƒç´ åï¼Œåˆå¹¶æ‰€æœ‰èƒ½åˆå¹¶çš„æ•°ç»„å…ƒç´ ï¼Œå³å¯¹é½
 void GenIR::mergeElements(vector<int>& dimensions, vector<Array_Type*>& arrayTys, int up, int dimAdd, vector<Constant*>& elements, vector<int>& elementsCnts) 
 {
     for (int i = dimAdd; i > up; i--) 
@@ -273,14 +273,14 @@ void GenIR::mergeElements(vector<int>& dimensions, vector<Array_Type*>& arrayTys
     }
 }
 
-//×îºóºÏ²¢ËùÓĞÔªËØ£¬²»×ãºÏ²¢ÔòÌî0ÔªËØ£¬Ê¹µÃelementsÖ»Ê£ÏÂÒ»¸öarrayTys[up]ÀàĞÍµÄ×îÖÕÊı×é
+//æœ€ååˆå¹¶æ‰€æœ‰å…ƒç´ ï¼Œä¸è¶³åˆå¹¶åˆ™å¡«0å…ƒç´ ï¼Œä½¿å¾—elementsåªå‰©ä¸‹ä¸€ä¸ªarrayTys[up]ç±»å‹çš„æœ€ç»ˆæ•°ç»„
 void GenIR::mergeFinal(vector<int>& dimensions, vector<Array_Type*>& arrayTys, int up, vector<Constant*>& elements, vector<int>& elementsCnts) const 
 {
     for (int i = dimensions.size() - 1; i >= up; i--) 
     {
         while (elementsCnts[i] % dimensions[i] != 0) 
         {
-            //²¹³äµ±Ç°Êı×éÀàĞÍËùĞè0ÔªËØ
+            //è¡¥å……å½“å‰æ•°ç»„ç±»å‹æ‰€éœ€0å…ƒç´ 
             if (i == dimensions.size() - 1) 
             {
                 if (cur_Type == INT32_T) 
@@ -310,11 +310,11 @@ void GenIR::mergeFinal(vector<int>& dimensions, vector<Array_Type*>& arrayTys, i
     }
 }
 
-//Éú³É±äÁ¿Êı×éµÄ³õÊ¼»¯
+//ç”Ÿæˆå˜é‡æ•°ç»„çš„åˆå§‹åŒ–
 Constant_Array* GenIR::globalInit(vector<int>& dimensions, vector<Array_Type*>& arrayTys, int up, vector<unique_ptr<InitValAST>>& list) 
 {
-    vector<int> elementsCnts(dimensions.size()); //¶ÔÓ¦¸÷¸öÎ¬¶ÈµÄ×ÓÊı×éµÄÔªËØ¸öÊı
-    vector<Constant*> elements; //¸÷¸öÔªËØ
+    vector<int> elementsCnts(dimensions.size()); //å¯¹åº”å„ä¸ªç»´åº¦çš„å­æ•°ç»„çš„å…ƒç´ ä¸ªæ•°
+    vector<Constant*> elements; //å„ä¸ªå…ƒç´ 
     int dimAdd;
     for (auto& val : list) 
     {
@@ -327,10 +327,10 @@ Constant_Array* GenIR::globalInit(vector<int>& dimensions, vector<Array_Type*>& 
         }
         else 
         {
-            auto nextUp = getNextD(elementsCnts, up); //¸ÃÇ¶Ì×Êı×éµÄÎ¬¶È
-            dimAdd = nextUp - 1; //±ÈËû¸ßÒ»Î¬¶ÈµÄÊı×éĞèÒªÌí¼ÓÒ»¸öÔªËØ
+            auto nextUp = getNextD(elementsCnts, up); //è¯¥åµŒå¥—æ•°ç»„çš„ç»´åº¦
+            dimAdd = nextUp - 1; //æ¯”ä»–é«˜ä¸€ç»´åº¦çš„æ•°ç»„éœ€è¦æ·»åŠ ä¸€ä¸ªå…ƒç´ 
             if (nextUp == dimensions.size()) 
-                cout << "initial invalid" << endl;//Ã»ÓĞÁ¬Ğø0£¬Ã»¶ÔÆë£¬²»ºÏ·¨
+                cout << "initial invalid" << endl;//æ²¡æœ‰è¿ç»­0ï¼Œæ²¡å¯¹é½ï¼Œä¸åˆæ³•
             if (val->initValList.empty()) 
             {
                 elements.push_back(new Constant_Zero(arrayTys[nextUp]));
@@ -349,7 +349,7 @@ Constant_Array* GenIR::globalInit(vector<int>& dimensions, vector<Array_Type*>& 
 }
 
 
-//¸ù¾İ³õÊ¼»¯µÄÁ¿¾ö¶¨Ç¶Ì×Êı×éµÄÎ¬¶È
+//æ ¹æ®åˆå§‹åŒ–çš„é‡å†³å®šåµŒå¥—æ•°ç»„çš„ç»´åº¦
 int GenIR::getNextD(vector<int>& dimensionsCnt, int up, int cnt) 
 {
     for (int i = up; i < dimensionsCnt.size(); i++) 
@@ -360,7 +360,7 @@ int GenIR::getNextD(vector<int>& dimensionsCnt, int up, int cnt)
     return 0;
 }
 
-//¸ù¾İÊ×Ö¸Õëµİ¹é³õÊ¼»¯Êı×é,up±íÊ¾×ÓÊı×éµÄ×î¸ß¶ÔÆëÎ»ÖÃ£¬±ÈÈç[4][2][4]£¬×ÓÊı×é×î¸ß¶ÔÆë[2][4],upÎª1
+//æ ¹æ®é¦–æŒ‡é’ˆé€’å½’åˆå§‹åŒ–æ•°ç»„,upè¡¨ç¤ºå­æ•°ç»„çš„æœ€é«˜å¯¹é½ä½ç½®ï¼Œæ¯”å¦‚[4][2][4]ï¼Œå­æ•°ç»„æœ€é«˜å¯¹é½[2][4],upä¸º1
 void GenIR::localInit(Value* ptr, vector<unique_ptr<InitValAST>>& list, vector<int>& dimensionsCnt, int up) 
 {
     int cnt = 0;
@@ -370,7 +370,7 @@ void GenIR::localInit(Value* ptr, vector<unique_ptr<InitValAST>>& list, vector<i
         if (initVal->exp) 
         {
             if (cnt == 0) 
-                cnt++; //µÚÒ»´Î¸³ÖµÊ±¿ÉÒÔÉÙÒ»´Îcreate_gep
+                cnt++; //ç¬¬ä¸€æ¬¡èµ‹å€¼æ—¶å¯ä»¥å°‘ä¸€æ¬¡create_gep
             else 
                 tempPtr = builder->create_gep(ptr, { CONST_INT(cnt++) });
             initVal->exp->accept(*this);
@@ -385,17 +385,17 @@ void GenIR::localInit(Value* ptr, vector<unique_ptr<InitValAST>>& list, vector<i
             if (!initVal->initValList.empty()) 
             {
                 if (cnt != 0) 
-                    tempPtr = builder->create_gep(ptr, { CONST_INT(cnt) }); //Ã»¸³Öµ¹ı£¬ÄÇtempPtrÊµ¼Ê¾ÍÊÇptr
+                    tempPtr = builder->create_gep(ptr, { CONST_INT(cnt) }); //æ²¡èµ‹å€¼è¿‡ï¼Œé‚£tempPtrå®é™…å°±æ˜¯ptr
                 localInit(tempPtr, initVal->initValList, dimensionsCnt, nextUp);
             }
-            cnt += dimensionsCnt[nextUp]; //Êı×é³õÊ¼»¯Á¿Ò»¶¨Ôö¼ÓÕâÃ´¶à
+            cnt += dimensionsCnt[nextUp]; //æ•°ç»„åˆå§‹åŒ–é‡ä¸€å®šå¢åŠ è¿™ä¹ˆå¤š
         }
     }
 }
 
 void GenIR::visit(InitValAST& ast) 
 {
-    //²»ÊÇÊı×éÔòÇóexpµÄÖµ£¬ÈôÊÇÊı×é²»»á½øÈë´Ëº¯Êı
+    //ä¸æ˜¯æ•°ç»„åˆ™æ±‚expçš„å€¼ï¼Œè‹¥æ˜¯æ•°ç»„ä¸ä¼šè¿›å…¥æ­¤å‡½æ•°
     if (ast.exp != nullptr) 
     {
         ast.exp->accept(*this);
@@ -412,21 +412,21 @@ void GenIR::visit(FuncDefAST& ast)
     else if (ast.funcType == FLOAT_T) retType = FLOAT_Ts;
     else retType = VOID_T;
 
-    //»ñÈ¡²ÎÊıÁĞ±í
+    //è·å–å‚æ•°åˆ—è¡¨
     for (auto& funcFParam : ast.funcParamList) 
     {
         funcFParam->accept(*this);
     }
-    //»ñÈ¡º¯ÊıÀàĞÍ
+    //è·å–å‡½æ•°ç±»å‹
     auto funTy = new Function_Type(retType, params);
-    //Ìí¼Óº¯Êı
+    //æ·»åŠ å‡½æ•°
     auto func = new Function(funTy, *ast.id, module.get());
     curFun = func;
-    scope.push(*ast.id, func); //ÔÚ½øÈëĞÂµÄ×÷ÓÃÓòÖ®Ç°Ìí¼Óµ½·ûºÅ±íÖĞ
-    //½øÈëº¯Êı(½øÈëĞÂµÄ×÷ÓÃÓò)
+    scope.push(*ast.id, func); //åœ¨è¿›å…¥æ–°çš„ä½œç”¨åŸŸä¹‹å‰æ·»åŠ åˆ°ç¬¦å·è¡¨ä¸­
+    //è¿›å…¥å‡½æ•°(è¿›å…¥æ–°çš„ä½œç”¨åŸŸ)
     scope.enter();
 
-    std::vector<Value*> args; // »ñÈ¡º¯ÊıµÄĞÎ²Î,Í¨¹ıFunctionÖĞµÄiterator
+    std::vector<Value*> args; // è·å–å‡½æ•°çš„å½¢å‚,é€šè¿‡Functionä¸­çš„iterator
     for (auto arg = func->arguments_.begin(); arg != func->arguments_.end(); arg++)
         args.push_back(*arg);
 
@@ -434,52 +434,52 @@ void GenIR::visit(FuncDefAST& ast)
     builder->BB_ = bb;
     for (int i = 0; i < (int)(paramNames.size()); i++) 
     {
-        auto alloc = builder->create_alloca(params[i]); //·ÖÅäĞÎ²Î¿Õ¼ä
-        builder->create_store(args[i], alloc);          // store ĞÎ²Î
-        scope.push(paramNames[i], alloc);         //¼ÓÈë×÷ÓÃÓò
+        auto alloc = builder->create_alloca(params[i]); //åˆ†é…å½¢å‚ç©ºé—´
+        builder->create_store(args[i], alloc);          // store å½¢å‚
+        scope.push(paramNames[i], alloc);         //åŠ å…¥ä½œç”¨åŸŸ
     }
-    //´´½¨Í³Ò»return·ÖÖ§
+    //åˆ›å»ºç»Ÿä¸€returnåˆ†æ”¯
     retBB = new BasicBlock(module.get(), "label_ret", func);
     if (retType == VOID_T) 
     {
-        // voidÀàĞÍÎŞĞè·µ»ØÖµ
+        // voidç±»å‹æ— éœ€è¿”å›å€¼
         builder->BB_ = retBB;
         builder->create_void_ret();
     }
     else 
     {
-        retAlloca = builder->create_alloca(retType); // ÔÚÄÚ´æÖĞ·ÖÅä·µ»ØÖµµÄÎ»ÖÃ
+        retAlloca = builder->create_alloca(retType); // åœ¨å†…å­˜ä¸­åˆ†é…è¿”å›å€¼çš„ä½ç½®
         builder->BB_ = retBB;
         auto retLoad = builder->create_load(retAlloca);
         builder->create_ret(retLoad);
     }
-    //ÖØĞÂ»Øµ½º¯Êı¿ªÊ¼
+    //é‡æ–°å›åˆ°å‡½æ•°å¼€å§‹
     builder->BB_ = bb;
     has_br = false;
     ast.block->accept(*this);
 
-    //´¦ÀíÃ»ÓĞreturnµÄ¿Õ¿é
+    //å¤„ç†æ²¡æœ‰returnçš„ç©ºå—
     if (!builder->BB_->get_terminator())
         builder->create_br(retBB);
 }
 
 void GenIR::visit(FuncParamAST& ast) 
 {
-    //»ñÈ¡²ÎÊıÀàĞÍ
+    //è·å–å‚æ•°ç±»å‹
     Type* paramType;
     if (ast.bType == INT_T) paramType = INT32_T;
     else paramType = FLOAT_Ts;
-    //ÊÇ·ñÎªÊı×é
+    //æ˜¯å¦ä¸ºæ•°ç»„
     if (ast.isArray) 
     {
-        use_Const = true; //Êı×éÎ¬¶ÈÊÇÕûĞÍ³£Á¿
+        use_Const = true; //æ•°ç»„ç»´åº¦æ˜¯æ•´å‹å¸¸é‡
         for (int i = ast.arrays.size() - 1; i >= 0; i--) 
         {
             ast.arrays[i]->accept(*this);
             paramType = module->get_array_type(paramType, ((Constant_Int*)recVal)->value_);
         }
         use_Const = false;
-        //Èçint a[][2]£¬Ôò²ÎÊıÎª[2 x i32]* ;  int a[],²ÎÊıÎªi32 *
+        //å¦‚int a[][2]ï¼Œåˆ™å‚æ•°ä¸º[2 x i32]* ;  int a[],å‚æ•°ä¸ºi32 *
         paramType = module->get_pointer_type(paramType);
     }
     params.push_back(paramType);
@@ -488,18 +488,18 @@ void GenIR::visit(FuncParamAST& ast)
 
 void GenIR::visit(BlockAST& ast) 
 {
-    //Èç¹ûÊÇÒ»¸öĞÂµÄº¯Êı£¬Ôò²»ÓÃÔÙ½øÈëÒ»¸öĞÂµÄ×÷ÓÃÓò
+    //å¦‚æœæ˜¯ä¸€ä¸ªæ–°çš„å‡½æ•°ï¼Œåˆ™ä¸ç”¨å†è¿›å…¥ä¸€ä¸ªæ–°çš„ä½œç”¨åŸŸ
     if (isNewFunc)
         isNewFunc = false;
-    //ÆäËüÇé¿ö£¬ĞèÒª½øÈëÒ»¸öĞÂµÄ×÷ÓÃÓò
+    //å…¶å®ƒæƒ…å†µï¼Œéœ€è¦è¿›å…¥ä¸€ä¸ªæ–°çš„ä½œç”¨åŸŸ
     else 
     {
         scope.enter();
     }
-    //±éÀúÃ¿Ò»¸öÓï¾ä¿é
+    //éå†æ¯ä¸€ä¸ªè¯­å¥å—
     for (auto& item : ast.sentences) 
     {
-        if (has_br) break;     //´ËBBÒÑ¾­³öÏÖÁËbr£¬ºóĞøÖ¸ÁîÎŞĞ§
+        if (has_br) break;     //æ­¤BBå·²ç»å‡ºç°äº†brï¼Œåç»­æŒ‡ä»¤æ— æ•ˆ
         item->accept(*this);
     }
 
@@ -529,10 +529,10 @@ void GenIR::visit(StmtAST& ast)
         Value* val[2]; //lVal, rVal
         ast.exp->accept(*this);
         val[1] = recVal;
-        reqLV = true; //ÌáÊ¾·µ»ØµØÖ·
+        reqLV = true; //æç¤ºè¿”å›åœ°å€
         ast.leftVal->accept(*this);
         val[0] = recVal;
-        //¼ì²éÀàĞÍÊÇ·ñÒ»ÖÂ
+        //æ£€æŸ¥ç±»å‹æ˜¯å¦ä¸€è‡´
         if (val[0]->type_ == INT32PTR_T && val[1]->type_ == FLOAT_Ts) {
             val[1] = builder->create_fptosi(val[1], INT32_T);
         }
@@ -579,9 +579,9 @@ void GenIR::visit(ReturnStmtAST& ast)
     }
     else 
     {
-        //ÏÈ°Ñ·µ»ØÖµstoreÔÚretAllocaÖĞ£¬ÔÙÌø×ªµ½Í³Ò»µÄ·µ»ØÈë¿Ú
+        //å…ˆæŠŠè¿”å›å€¼storeåœ¨retAllocaä¸­ï¼Œå†è·³è½¬åˆ°ç»Ÿä¸€çš„è¿”å›å…¥å£
         ast.exp->accept(*this);
-        //ÀàĞÍ×ª»»
+        //ç±»å‹è½¬æ¢
         if (recVal->type_ == FLOAT_Ts && curFun->get_return_type() == INT32_T) 
         {
             auto temp = builder->create_fptosi(recVal, INT32_T);
@@ -601,19 +601,19 @@ void GenIR::visit(ReturnStmtAST& ast)
 
 void GenIR::visit(SelectStmtAST& ast) 
 {
-    //ÏÈ±£´ætrueBBºÍfalseBB£¬·ÀÖ¹Ç¶Ì×µ¼ÖÂ·µ»ØÉÏÒ»²ãºó¶ªÊ§¿éµÄµØÖ·
+    //å…ˆä¿å­˜trueBBå’ŒfalseBBï¼Œé˜²æ­¢åµŒå¥—å¯¼è‡´è¿”å›ä¸Šä¸€å±‚åä¸¢å¤±å—çš„åœ°å€
     auto tempTrue = trueBB;
     auto tempFalse = falseBB;
 
     trueBB = new BasicBlock(module.get(), to_string(id++), curFun);
     falseBB = new BasicBlock(module.get(), to_string(id++), curFun);
-    BasicBlock* nextIf; // ifÓï¾äºóµÄ»ù±¾¿é
+    BasicBlock* nextIf; // ifè¯­å¥åçš„åŸºæœ¬å—
     if (ast.elseStmt == nullptr) 
         nextIf = falseBB;
     else 
         nextIf = new BasicBlock(module.get(), to_string(id++), curFun);
     ast.cond->accept(*this);
-    //¼ì²éÊÇ·ñÊÇi1£¬²»ÊÇÔò½øĞĞ±È½Ï
+    //æ£€æŸ¥æ˜¯å¦æ˜¯i1ï¼Œä¸æ˜¯åˆ™è¿›è¡Œæ¯”è¾ƒ
     if (recVal->type_ == INT32_T) 
     {
         recVal = builder->create_icmp_ne(recVal, CONST_INT(0));
@@ -624,7 +624,7 @@ void GenIR::visit(SelectStmtAST& ast)
     }
     builder->create_cond_br(recVal, trueBB, falseBB);
 
-    builder->BB_ = trueBB; //¿ªÊ¼¹¹½¨trueBB
+    builder->BB_ = trueBB; //å¼€å§‹æ„å»ºtrueBB
     has_br = false;
     ast.ifStmt->accept(*this);
     if (!builder->BB_->get_terminator()) 
@@ -633,7 +633,7 @@ void GenIR::visit(SelectStmtAST& ast)
     }
 
     if (ast.elseStmt != nullptr) 
-    { // ¿ªÊ¼¹¹½¨falseBB
+    { // å¼€å§‹æ„å»ºfalseBB
         builder->BB_ = falseBB;
         has_br = false;
         ast.elseStmt->accept(*this);
@@ -645,18 +645,18 @@ void GenIR::visit(SelectStmtAST& ast)
 
     builder->BB_ = nextIf;
     has_br = false;
-    // »¹Ô­trueBBºÍfalseBB
+    // è¿˜åŸtrueBBå’ŒfalseBB
     trueBB = tempTrue;
     falseBB = tempFalse;
 }
 
 void GenIR::visit(IterationStmtAST& ast) 
 {
-    //ÏÈ±£´ætrueBBºÍfalseBB£¬·ÀÖ¹Ç¶Ì×µ¼ÖÂ·µ»ØÉÏÒ»²ãºó¶ªÊ§¿éµÄµØÖ·
+    //å…ˆä¿å­˜trueBBå’ŒfalseBBï¼Œé˜²æ­¢åµŒå¥—å¯¼è‡´è¿”å›ä¸Šä¸€å±‚åä¸¢å¤±å—çš„åœ°å€
     auto tempTrue = trueBB;
-    auto tempFalse = falseBB; //¼´whileµÄnext block
+    auto tempFalse = falseBB; //å³whileçš„next block
     auto tempCond = whileCondBB;
-    auto tempWhileFalseBB = whileFalseBB; //breakÖ»ÌøwhileµÄfalse£¬¶ø²»ÌøÈ«¾Öfalse
+    auto tempWhileFalseBB = whileFalseBB; //breakåªè·³whileçš„falseï¼Œè€Œä¸è·³å…¨å±€false
 
     whileCondBB = new BasicBlock(module.get(), to_string(id++), curFun);
     trueBB = new BasicBlock(module.get(), to_string(id++), curFun);
@@ -664,7 +664,7 @@ void GenIR::visit(IterationStmtAST& ast)
     whileFalseBB = falseBB;
 
     builder->create_br(whileCondBB);
-    builder->BB_ = whileCondBB; //Ìõ¼şÒ²ÊÇÒ»¸ö»ù±¾¿é
+    builder->BB_ = whileCondBB; //æ¡ä»¶ä¹Ÿæ˜¯ä¸€ä¸ªåŸºæœ¬å—
     has_br = false;
     ast.cond->accept(*this);
     if (recVal->type_ == INT32_T) 
@@ -680,7 +680,7 @@ void GenIR::visit(IterationStmtAST& ast)
     builder->BB_ = trueBB;
     has_br = false;
     ast.stmt->accept(*this);
-    //whileÓï¾äÌåÒ»¶¨ÊÇÌø»Øcond
+    //whileè¯­å¥ä½“ä¸€å®šæ˜¯è·³å›cond
     if (!builder->BB_->get_terminator()) 
     {
         builder->create_br(whileCondBB);
@@ -689,14 +689,14 @@ void GenIR::visit(IterationStmtAST& ast)
     builder->BB_ = falseBB;
     has_br = false;
 
-    //»¹Ô­trueBB£¬falseBB£¬tempCond
+    //è¿˜åŸtrueBBï¼ŒfalseBBï¼ŒtempCond
     trueBB = tempTrue;
     falseBB = tempFalse;
     whileCondBB = tempCond;
     whileFalseBB = tempWhileFalseBB;
 }
 
-//¸ù¾İ´ı¼ÆËãµÄÁ½¸öConstantµÄÀàĞÍ£¬Çó³ö¶ÔÓ¦µÄÖµ¸³Öµµ½intVal£¬floatValÖĞ£¬·µ»Ø¼ÆËã½á¹ûÊÇ·ñÎªint
+//æ ¹æ®å¾…è®¡ç®—çš„ä¸¤ä¸ªConstantçš„ç±»å‹ï¼Œæ±‚å‡ºå¯¹åº”çš„å€¼èµ‹å€¼åˆ°intValï¼ŒfloatValä¸­ï¼Œè¿”å›è®¡ç®—ç»“æœæ˜¯å¦ä¸ºint
 bool GenIR::checkCType(Value* val[], int intVal[], float floatVal[]) 
 {
     bool resultIsInt = false;
@@ -707,7 +707,7 @@ bool GenIR::checkCType(Value* val[], int intVal[], float floatVal[])
         intVal[1] = dynamic_cast<Constant_Int*>(val[1])->value_;
     }
     else 
-    { //²Ù×÷½á¹ûÒ»¶¨ÊÇfloat
+    { //æ“ä½œç»“æœä¸€å®šæ˜¯float
         if (dynamic_cast<Constant_Int*>(val[0])) floatVal[0] = dynamic_cast<Constant_Int*>(val[0])->value_;
         else floatVal[0] = dynamic_cast<Constant_Float*>(val[0])->value_;
         if (dynamic_cast<Constant_Int*>(val[1])) floatVal[1] = dynamic_cast<Constant_Int*>(val[1])->value_;
@@ -716,7 +716,7 @@ bool GenIR::checkCType(Value* val[], int intVal[], float floatVal[])
     return resultIsInt;
 }
 
-//¸ù¾İ´ı¼ÆËãµÄÁ½¸ö¼Ä´æÆ÷ÊıµÄÀàĞÍ£¬ÈôĞèÒª×ª»»ÀàĞÍÊä³ö×ª»»Ö¸Áî
+//æ ¹æ®å¾…è®¡ç®—çš„ä¸¤ä¸ªå¯„å­˜å™¨æ•°çš„ç±»å‹ï¼Œè‹¥éœ€è¦è½¬æ¢ç±»å‹è¾“å‡ºè½¬æ¢æŒ‡ä»¤
 void GenIR::checkCType(Value* val[]) 
 {
     if (val[0]->type_ == INT1_T) 
@@ -751,7 +751,7 @@ void GenIR::visit(LowAST& ast)
     ast.high->accept(*this);
     val[1] = recVal;
 
-    //Èô¶¼ÊÇ³£Á¿
+    //è‹¥éƒ½æ˜¯å¸¸é‡
     if (use_Const) 
     {
         int intVal[3]; //lInt, rInt, relInt;
@@ -773,7 +773,7 @@ void GenIR::visit(LowAST& ast)
         return;
     }
 
-    //Èô²»ÊÇ³£Á¿£¬½øĞĞ¼ÆËã£¬Êä³öÖ¸Áî
+    //è‹¥ä¸æ˜¯å¸¸é‡ï¼Œè¿›è¡Œè®¡ç®—ï¼Œè¾“å‡ºæŒ‡ä»¤
     checkCType(val);
     if (val[0]->type_ == INT32_T) 
     {
@@ -815,7 +815,7 @@ void GenIR::visit(HighAST& ast)
     ast.unary->accept(*this);
     val[1] = recVal;
 
-    //Èô¶¼ÊÇ³£Á¿
+    //è‹¥éƒ½æ˜¯å¸¸é‡
     if (use_Const) 
     {
         int intVal[3]; //lInt, rInt, relInt;
@@ -840,7 +840,7 @@ void GenIR::visit(HighAST& ast)
         return;
     }
 
-    //Èô²»ÊÇ³£Á¿£¬½øĞĞ¼ÆËã£¬Êä³öÖ¸Áî
+    //è‹¥ä¸æ˜¯å¸¸é‡ï¼Œè¿›è¡Œè®¡ç®—ï¼Œè¾“å‡ºæŒ‡ä»¤
     checkCType(val);
     if (val[0]->type_ == INT32_T) 
     {
@@ -874,7 +874,7 @@ void GenIR::visit(HighAST& ast)
 
 void GenIR::visit(UnaryAST& ast) 
 {
-    // Îª³£Á¿ËãÊ½
+    // ä¸ºå¸¸é‡ç®—å¼
     if (use_Const) 
     {
         if (ast.primaryExp) 
@@ -886,7 +886,7 @@ void GenIR::visit(UnaryAST& ast)
             ast.unary->accept(*this);
             if (ast.op == MINUS_OP) 
             {
-                //ÊÇÕûĞÍ³£Á¿
+                //æ˜¯æ•´å‹å¸¸é‡
                 if (dynamic_cast<Constant_Int*>(recVal)) 
                 {
                     auto temp = (Constant_Int*)recVal;
@@ -909,7 +909,7 @@ void GenIR::visit(UnaryAST& ast)
     }
 
 
-    //²»ÊÇ³£Á¿ËãÊ½
+    //ä¸æ˜¯å¸¸é‡ç®—å¼
     if (ast.primaryExp != nullptr) 
     {
         ast.primaryExp->accept(*this);
@@ -974,33 +974,33 @@ void GenIR::visit(PrimaryExpAST& ast)
 
 void GenIR::visit(LeftValAST& ast) 
 {
-    bool isTrueLVal = reqLV; //ÊÇ·ñÕæÊÇ×÷Îª×óÖµ
+    bool isTrueLVal = reqLV; //æ˜¯å¦çœŸæ˜¯ä½œä¸ºå·¦å€¼
     reqLV = false;
     auto var = scope.find(*ast.id);
-    //È«¾Ö×÷ÓÃÓòÄÚ£¬Ò»¶¨Ê¹ÓÃ³£Á¿£¬È«¾Ö×÷ÓÃÓòÏÂ·ÃÎÊµ½LValAST£¬ÄÇÃ´use_constÒ»¶¨±»ÖÃÎªÁËtrue
+    //å…¨å±€ä½œç”¨åŸŸå†…ï¼Œä¸€å®šä½¿ç”¨å¸¸é‡ï¼Œå…¨å±€ä½œç”¨åŸŸä¸‹è®¿é—®åˆ°LValASTï¼Œé‚£ä¹ˆuse_constä¸€å®šè¢«ç½®ä¸ºäº†true
     if (scope.in_global()) 
     {
-        //²»ÊÇÊı×é£¬Ö±½Ó·µ»Ø¸Ã³£Á¿
+        //ä¸æ˜¯æ•°ç»„ï¼Œç›´æ¥è¿”å›è¯¥å¸¸é‡
         if (ast.dimensions.empty()) 
         {
             recVal = var;
             return;
         }
-        //ÈôÊÇÊı×é£¬ÔòvarÒ»¶¨ÊÇÈ«¾Ö³£Á¿Êı×é
+        //è‹¥æ˜¯æ•°ç»„ï¼Œåˆ™varä¸€å®šæ˜¯å…¨å±€å¸¸é‡æ•°ç»„
         vector<int> index;
         for (auto& exp : ast.dimensions) 
         {
             exp->accept(*this);
             index.push_back(dynamic_cast<Constant_Int*>(recVal)->value_);
         }
-        recVal = ((Global_Variable*)var)->init_val_; //Ê¹ÓÃvarµÄ³õÊ¼»¯Êı×é²éÕÒ³£Á¿ÔªËØ
+        recVal = ((Global_Variable*)var)->init_val_; //ä½¿ç”¨varçš„åˆå§‹åŒ–æ•°ç»„æŸ¥æ‰¾å¸¸é‡å…ƒç´ 
         for (int i : index) 
         {
-            //Ä³Êı×éÔªËØÎªConstantZero£¬Ôò¸ÃÊıÒ»¶¨ÊÇ0
+            //æŸæ•°ç»„å…ƒç´ ä¸ºConstantZeroï¼Œåˆ™è¯¥æ•°ä¸€å®šæ˜¯0
             if (dynamic_cast<Constant_Zero*>(recVal)) 
             {
                 Type* arrayTy = recVal->type_;
-                //ÕÒÊı×éÔªËØ±êÇ©
+                //æ‰¾æ•°ç»„å…ƒç´ æ ‡ç­¾
                 while (dynamic_cast<Array_Type*>(arrayTy)) 
                 {
                     arrayTy = dynamic_cast<Array_Type*>(arrayTy)->contained_;
@@ -1017,23 +1017,23 @@ void GenIR::visit(LeftValAST& ast)
         return;
     }
 
-    //¾Ö²¿×÷ÓÃÓò
+    //å±€éƒ¨ä½œç”¨åŸŸ
     if (var->type_->tid_ == Type::IntegerTyID || var->type_->tid_ == Type::FloatTyID) 
-    { //ËµÃ÷Îª¾Ö²¿³£Á¿
+    { //è¯´æ˜ä¸ºå±€éƒ¨å¸¸é‡
         recVal = var;
         return;
     }
-    // ²»ÊÇ³£Á¿ÄÇÃ´varÒ»¶¨ÊÇÖ¸ÕëÀàĞÍ
-    Type* varType = static_cast<Pointer_Type*>(var->type_)->contained_; //ËùÖ¸µÄÀàĞÍ
+    // ä¸æ˜¯å¸¸é‡é‚£ä¹ˆvarä¸€å®šæ˜¯æŒ‡é’ˆç±»å‹
+    Type* varType = static_cast<Pointer_Type*>(var->type_)->contained_; //æ‰€æŒ‡çš„ç±»å‹
     if (!ast.dimensions.empty()) 
-    { //ËµÃ÷ÊÇÊı×é
+    { //è¯´æ˜æ˜¯æ•°ç»„
         vector<Value*> idxs;
         for (auto& exp : ast.dimensions) 
         {
             exp->accept(*this);
             idxs.push_back(recVal);
         }
-        // µ±º¯Êı´«Èë²ÎÊıi32 *£¬»áÉú³ÉÀàĞÍÎªi32 **µÄ¾Ö²¿±äÁ¿£¬¼´´ËÇé¿ö
+        // å½“å‡½æ•°ä¼ å…¥å‚æ•°i32 *ï¼Œä¼šç”Ÿæˆç±»å‹ä¸ºi32 **çš„å±€éƒ¨å˜é‡ï¼Œå³æ­¤æƒ…å†µ
         if (varType->tid_ == Type::PointerTyID) 
         {
             var = builder->create_load(var);
@@ -1042,21 +1042,21 @@ void GenIR::visit(LeftValAST& ast)
         {
             idxs.insert(idxs.begin(), CONST_INT(0));
         }
-        var = builder->create_gep(var, idxs); //»ñÈ¡µÄÒ»¶¨ÊÇÖ¸ÕëÀàĞÍ
+        var = builder->create_gep(var, idxs); //è·å–çš„ä¸€å®šæ˜¯æŒ‡é’ˆç±»å‹
         varType = ((Pointer_Type*)var->type_)->contained_;
     }
 
-    //Ö¸ÏòµÄ»¹ÊÇÊı×é,ÄÇÃ´Ò»¶¨ÊÇ´«Êı×é²Î,Êı×éÈôÎªx[2], ²ÎÊıÎªint a[]£¬ĞèÒª´«i32 *
+    //æŒ‡å‘çš„è¿˜æ˜¯æ•°ç»„,é‚£ä¹ˆä¸€å®šæ˜¯ä¼ æ•°ç»„å‚,æ•°ç»„è‹¥ä¸ºx[2], å‚æ•°ä¸ºint a[]ï¼Œéœ€è¦ä¼ i32 *
     if (varType->tid_ == Type::ArrayTyID) 
     {
         recVal = builder->create_gep(var, { CONST_INT(0), CONST_INT(0) });
     }
     else if (!isTrueLVal) 
-    { //Èç¹û²»ÊÇÈ¡×óÖµ£¬ÄÇÃ´load
+    { //å¦‚æœä¸æ˜¯å–å·¦å€¼ï¼Œé‚£ä¹ˆload
         recVal = builder->create_load(var);
     }
     else 
-    { //·ñÔò·µ»ØµØÖ·Öµ
+    { //å¦åˆ™è¿”å›åœ°å€å€¼
         recVal = var;
     }
 }
@@ -1070,7 +1070,7 @@ void GenIR::visit(NumberAST& ast)
 void GenIR::visit(CallAST& ast) 
 {
     auto fun = (Function*)scope.find(*ast.id);
-    //ÒıÓÃº¯Êı·µ»ØÖµ
+    //å¼•ç”¨å‡½æ•°è¿”å›å€¼
     if (fun->basic_blocks_.size() && !is_single_exp)
         fun->use_ret_cnt++;
     is_single_exp = false;
@@ -1078,7 +1078,7 @@ void GenIR::visit(CallAST& ast)
     for (int i = 0; i < ast.funcParamList.size(); i++) 
     {
         ast.funcParamList[i]->accept(*this);
-        //¼ì²éº¯ÊıĞÎ²ÎÓëÊµ²ÎÀàĞÍÊÇ·ñÆ¥Åä
+        //æ£€æŸ¥å‡½æ•°å½¢å‚ä¸å®å‚ç±»å‹æ˜¯å¦åŒ¹é…
         if (recVal->type_ == INT32_T && fun->arguments_[i]->type_ == FLOAT_Ts) 
         {
             recVal = builder->create_sitofp(recVal, FLOAT_Ts);
@@ -1189,7 +1189,7 @@ void GenIR::visit(AndAST& ast)
         ast.high->accept(*this);
         return;
     }
-    auto tempTrue = trueBB; //·ÀÖ¹Ç¶Ì×andµ¼ÖÂÔ­trueBB¶ªÊ§¡£ÓÃÓÚÉú³É¶ÌÂ·Ä£¿é
+    auto tempTrue = trueBB; //é˜²æ­¢åµŒå¥—andå¯¼è‡´åŸtrueBBä¸¢å¤±ã€‚ç”¨äºç”ŸæˆçŸ­è·¯æ¨¡å—
     trueBB = new BasicBlock(module.get(), to_string(id++), curFun);
     ast.low->accept(*this);
 
@@ -1204,7 +1204,7 @@ void GenIR::visit(AndAST& ast)
     builder->create_cond_br(recVal, trueBB, falseBB);
     builder->BB_ = trueBB;
     has_br = false;
-    trueBB = tempTrue; //»¹Ô­Ô­À´µÄtrueÄ£¿é
+    trueBB = tempTrue; //è¿˜åŸåŸæ¥çš„trueæ¨¡å—
 
     ast.high->accept(*this);
 }
@@ -1216,7 +1216,7 @@ void GenIR::visit(OrAST& ast)
         ast.high->accept(*this);
         return;
     }
-    auto tempFalse = falseBB; //·ÀÖ¹Ç¶Ì×andµ¼ÖÂÔ­trueBB¶ªÊ§¡£ÓÃÓÚÉú³É¶ÌÂ·Ä£¿é
+    auto tempFalse = falseBB; //é˜²æ­¢åµŒå¥—andå¯¼è‡´åŸtrueBBä¸¢å¤±ã€‚ç”¨äºç”ŸæˆçŸ­è·¯æ¨¡å—
     falseBB = new BasicBlock(module.get(), to_string(id++), curFun);
     ast.low->accept(*this);
     if (recVal->type_ == INT32_T) 
