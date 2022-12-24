@@ -17,7 +17,7 @@
 #include <string>
 #include <utility>
 
-#include "base.h"
+#include "../base.h"
 
 //类声明
 class Type;             //语义类
